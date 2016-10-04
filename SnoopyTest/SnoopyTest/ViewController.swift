@@ -18,6 +18,7 @@ public class SSID {
         let interfaces = CNCopySupportedInterfaces()
         //check for nil in regards to simulator... apparently works on actual device
         if interfaces != nil {
+            
             let interfacesArray = Array(arrayLiteral: interfaces) //cast the interfaces into an Array
             if interfacesArray.count > 0 {
                 let interfaceName =  String(interfacesArray[0]) //grab the first one
@@ -30,7 +31,6 @@ public class SSID {
                     currentSSID = interfaceData[kCNNetworkInfoKeySSID] as! String
                     let ssiddata = NSString(data:interfaceData[kCNNetworkInfoKeySSIDData]! as! NSData, encoding:NSUTF8StringEncoding) as! String
                     // ssid data from hex
-                    print(ssiddata)
                 }
             }
         }
@@ -50,14 +50,14 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
        
-//        if SSID.getSSID() == "Func not supported" {
-//            ssid.text = "WiFi Name"
-//        } else {
-//            ssid.text = SSID.getSSID()
-//        }
-       // print("HEREREERE", SSID.getSSID())
+        if SSID.getSSID() == "Func not supported" {
+            ssid.text = "WiFi Name"
+        } else {
+            ssid.text = SSID.getSSID()
+        }
+        print("HEREREERE", SSID.getSSID())
         
-//        refresh.addTarget(self, action: #selector(ViewController.update(_:)), forControlEvents: .TouchUpInside)
+        refresh.addTarget(self, action: #selector(ViewController.update(_:)), forControlEvents: .TouchUpInside)
     }
 
     override func didReceiveMemoryWarning() {
