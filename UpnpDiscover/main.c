@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/select.h>
-#include <sys/time.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 /*
@@ -82,7 +80,7 @@ int discover_hosts(struct str_vector *vector) {
     struct timeval timeout;
 
     // Get a socket for multicasting
-    if ((sock == socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
+    if (!socket(PF_INET, SOCK_DGRAM, 0)) { //remove == -1, debugg'd and the socket is fine
         perror("socket()");
         return -1;
     }
@@ -92,8 +90,10 @@ int discover_hosts(struct str_vector *vector) {
     src_sock.sin_family = AF_INET;
     src_sock.sin_addr.s_addr = htonl(INADDR_ANY);
     src_sock.sin_port = htons(opt_source_port);
+    //printf("Socket is: %d\n", sock);
 
-    if ((bind(sock, (struct sockaddr *)&src_sock, sizeof(src_sock))) == -1) {
+    if (!(bind(sock, (struct sockaddr *)&src_sock, sizeof(src_sock)))) {
+        printf("IN HERERREER");
         perror("bind()");
         return -1;
     } else if ((opt_verbose == true) && (opt_source_port != 0)) {
@@ -107,8 +107,8 @@ int discover_hosts(struct str_vector *vector) {
     inet_pton(AF_INET, SSDP_MULTICAST_ADDRESS, &dest_sock.sin_addr);
 
     //Send SSDP request
-    if ((ret = sendto(sock, ssdp_discover_string, strlen(ssdp_discover_string), 0,
-                      (struct sockaddr*) &dest_sock, sizeof(dest_sock))) == -1) {
+    if (!(ret = sendto(sock, ssdp_discover_string, strlen(ssdp_discover_string), 0,
+                      (struct sockaddr*) &dest_sock, sizeof(dest_sock)))) {
         perror("sendto()");
         return -1;
     } else if (ret != strlen(ssdp_discover_string)) {
@@ -200,7 +200,7 @@ int dns_lookup(char *ip_addr, char *host_name, int hostname_size) {
 int parse_cmd_opts(int argc, char *argv[]) {
     int cmdopt;
 
-    while ((cmdopt = getopt(argc, argv, "p:rv")) != -1) {
+    while ((cmdopt = getopt(argc, argv, "p:rv"))) {
         switch (cmdopt) {
             case 'p':
                 opt_source_port = atoi(optarg);
