@@ -42,8 +42,10 @@ int dns_lookup(char *ip_addr, char *hostname, int hostname_size);
 int parse_cmd_opts(int argc, char *argv[]);
 
 int main(int argc, char *argv[]) {
+    printf("HERE IN MAIN");
     int ret;
     struct str_vector my_vector;
+    //stuck in parse cmd
     parse_cmd_opts(argc, argv);
     str_vector_init(&my_vector);
     ret = discover_hosts(&my_vector);
@@ -58,6 +60,7 @@ int main(int argc, char *argv[]) {
  * Bonjour and other UDP
  */
 int discover_hosts(struct str_vector *vector) {
+    printf("HERE IN DISC HOSTS");
     int ret, sock, bytes_in, done = false;
     unsigned int host_sock_len;
     struct sockaddr_in src_sock, dest_sock, host_sock;
@@ -78,7 +81,6 @@ int discover_hosts(struct str_vector *vector) {
     char *url_start, *host_start, *host_end;
     fd_set read_fds; // from the netdb lib
     struct timeval timeout;
-
     // Get a socket for multicasting
     if (!socket(PF_INET, SOCK_DGRAM, 0)) { //remove == -1, debugg'd and the socket is fine
         perror("socket()");
@@ -90,13 +92,12 @@ int discover_hosts(struct str_vector *vector) {
     src_sock.sin_family = AF_INET;
     src_sock.sin_addr.s_addr = htonl(INADDR_ANY);
     src_sock.sin_port = htons(opt_source_port);
-    //printf("Socket is: %d\n", sock);
+    printf("Socket is: %d\n", sock);
 
     if (!(bind(sock, (struct sockaddr *)&src_sock, sizeof(src_sock)))) {
-        printf("IN HERERREER");
         perror("bind()");
         return -1;
-    } else if ((opt_verbose == true) && (opt_source_port != 0)) {
+    } else if (opt_verbose  && opt_source_port == 0){
         printf("[Client bound to port %d]\n\n", opt_source_port);
     }
 
@@ -200,7 +201,7 @@ int dns_lookup(char *ip_addr, char *host_name, int hostname_size) {
 int parse_cmd_opts(int argc, char *argv[]) {
     int cmdopt;
 
-    while ((cmdopt = getopt(argc, argv, "p:rv"))) {
+    cmdopt = getopt(argc, argv, "p:rv");
         switch (cmdopt) {
             case 'p':
                 opt_source_port = atoi(optarg);
@@ -219,8 +220,7 @@ int parse_cmd_opts(int argc, char *argv[]) {
                 printf("  -r\t\tDo reverse DNS lookups\n");
                 printf("  -v\t\tProvide verbose information\n");
                 printf("\n");
-                exit(EXIT_FAILURE);
+                break;
         }
-    }
     return 0;
 }
