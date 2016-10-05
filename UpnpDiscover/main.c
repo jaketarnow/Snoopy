@@ -61,7 +61,8 @@ int main(int argc, char *argv[]) {
  */
 int discover_hosts(struct str_vector *vector) {
     printf("HERE IN DISC HOSTS");
-    int ret, sock, bytes_in, done = false;
+    int sock, bytes_in, done = false;
+    int ret = 95;
     unsigned int host_sock_len;
     struct sockaddr_in src_sock, dest_sock, host_sock;
     char buffer[MAX_BUFFER_LEN];
@@ -76,8 +77,8 @@ int discover_hosts(struct str_vector *vector) {
             "MX: 10\r\n"
             "ST: ssdp:all\r\n"
             "\r\n";
-
     //declare pointers for IP URL and host specs
+    printf("\nDiscover String Length is: %d\n", strlen(ssdp_discover_string));
     char *url_start, *host_start, *host_end;
     fd_set read_fds; // from the netdb lib
     struct timeval timeout;
@@ -108,8 +109,8 @@ int discover_hosts(struct str_vector *vector) {
     inet_pton(AF_INET, SSDP_MULTICAST_ADDRESS, &dest_sock.sin_addr);
 
     //Send SSDP request
-    if (!(ret = sendto(sock, ssdp_discover_string, strlen(ssdp_discover_string), 0,
-                      (struct sockaddr*) &dest_sock, sizeof(dest_sock)))) {
+    if (!sendto(sock, ssdp_discover_string, strlen(ssdp_discover_string), 0,
+                      (struct sockaddr*) &dest_sock, sizeof(dest_sock))) {
         perror("sendto()");
         return -1;
     } else if (ret != strlen(ssdp_discover_string)) {
@@ -127,16 +128,17 @@ int discover_hosts(struct str_vector *vector) {
 
     //Loop through SSDP discovery -- request and response protocols
     do {
-        if (select(sock + 1, &read_fds, NULL, NULL, &timeout) == -1) {
+        if (!select(sock + 1, &read_fds, NULL, NULL, &timeout)) {
             perror("select()");
             return -1;
         }
         if (FD_ISSET(sock, &read_fds)) {
             host_sock_len = sizeof(host_sock);
-            if ((bytes_in = recvfrom(sock, buffer, sizeof(buffer), 0, &host_sock, &host_sock_len)) == -1) {
+            if (!(bytes_in = recvfrom(sock, &buffer, sizeof(buffer), 0, &host_sock, &host_sock_len))) {
                 perror("recvfrom()");
                 return -1;
             } buffer[bytes_in] = '\0'; // set buffer to accept 0 more bytes
+            printf("\n%s\n", buffer);
             //if HTTP Response is a 200 OK
             if (strncmp(buffer, "HTTP/1.1 200 OK", 12) == 0) {
                 if (opt_verbose == true) {
