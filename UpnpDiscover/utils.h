@@ -5,6 +5,11 @@
 #ifndef UPNPDISCOVER_UTILS_H
 #define UPNPDISCOVER_UTILS_H
 
+#if !defined TRUE && !defined FALSE
+#define TRUE    1
+#define FALSE   0
+#endif
+
 struct str_vector {
     char **str_array;
     int str_count;
@@ -17,3 +22,4 @@ int str_vector_search(struct str_vector *vector, char *search_str);
 int str_vector_free(struct str_vector *vector);
 
 #endif //UPNPDISCOVER_UTILS_H
+
