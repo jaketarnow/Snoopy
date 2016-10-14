@@ -30,8 +30,7 @@ int dns_lookup(char *ip_addr, char *hostname, int hostname_size);
 int parse_cmd_opts (int argc, char *argv[]);
 
 
-int main (int argc, char *argv[])
-{
+int main (int argc, char *argv[]) {
     int ret;
     struct str_vector my_vector;
 
@@ -54,8 +53,7 @@ int main (int argc, char *argv[])
  * Returns: 0 on success, -1 otherwise
  * *******************************************************************
  */
-int discover_hosts (struct str_vector *vector)
-{
+int discover_hosts (struct str_vector *vector) {
     int ret, sock, bytes_in, done = FALSE;
     unsigned int host_sock_len;
     struct sockaddr_in src_sock, dest_sock, host_sock;
@@ -65,7 +63,7 @@ int discover_hosts (struct str_vector *vector)
             "M-SEARCH * HTTP/1.1\r\n"
                     "HOST: 239.255.255.250:1900\r\n"
                     "MAN: \"ssdp:discover\"\r\n"
-                    "MX: 3\r\n"
+                    "MX: 10\r\n"
                     "ST: ssdp:all\r\n"
                     "\r\n";
     char *url_start, *host_start, *host_end;
@@ -73,8 +71,7 @@ int discover_hosts (struct str_vector *vector)
     struct timeval timeout;
 
     /* Get a socket */
-    if ((sock = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
-    {
+    if ((sock = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
         perror("socket()");
         return(-1);
     }
@@ -86,8 +83,7 @@ int discover_hosts (struct str_vector *vector)
     src_sock.sin_port = htons(opt_source_port);
 
     if ( (bind(sock, (struct sockaddr *)&src_sock,
-               sizeof(src_sock))) == -1 )
-    {
+               sizeof(src_sock))) == -1 ) {
         perror("bind()");
         return(-1);
     }
@@ -104,18 +100,14 @@ int discover_hosts (struct str_vector *vector)
     if ( (ret = sendto(sock, ssdp_discover_string,
                        strlen(ssdp_discover_string), 0,
                        (struct sockaddr*) &dest_sock,
-                       sizeof(dest_sock))) == -1)
-    {
+                       sizeof(dest_sock))) == -1) {
         perror("sendto()");
         return(-1);
-    }
-    else if (ret != strlen(ssdp_discover_string))
-    {
+    } else if (ret != strlen(ssdp_discover_string)) {
         fprintf(stderr, "sendto(): only sent %d of %d bytes\n",
                 ret, (int)strlen(ssdp_discover_string));
         return(-1);
-    }
-    else if ( opt_verbose == TRUE )
+    } else if ( opt_verbose == TRUE )
         printf("%s\n", ssdp_discover_string);
 
     /* Get SSDP response */
@@ -125,59 +117,47 @@ int discover_hosts (struct str_vector *vector)
     timeout.tv_usec = 0;
 
     /* Loop through SSDP discovery request responses */
-    do
-    {
-        if (select(sock+1, &read_fds, NULL, NULL, &timeout) == -1)
-        {
+    do {
+        if (select(sock+1, &read_fds, NULL, NULL, &timeout) == -1) {
             perror("select()");
             return(-1);
         }
 
-        if (FD_ISSET(sock, &read_fds))
-        {
+        if (FD_ISSET(sock, &read_fds)) {
             host_sock_len = sizeof(host_sock);
             if ((bytes_in = recvfrom(sock, buffer, sizeof(buffer), 0,
-                                     &host_sock, &host_sock_len)) == -1)
-            {
+                                     &host_sock, &host_sock_len)) == -1) {
                 perror("recvfrom()");
                 return(-1);
             }
             buffer[bytes_in] = '\0';
 
-            if (strncmp(buffer, "HTTP/1.1 200 OK", 12) == 0)
-            {
-                if ( opt_verbose == TRUE )
-                {
+            if (strncmp(buffer, "HTTP/1.1 200 OK", 12) == 0) {
+                if ( opt_verbose == TRUE ) {
                     printf("\n%s", buffer);
                 }
 
                 /* Skip ahead to url in SSDP response */
-                if ( (url_start = strcasestr(buffer, "LOCATION:")) != NULL )
-                {
+                if ( (url_start = strcasestr(buffer, "LOCATION:")) != NULL ) {
                     /* Get hostname/IP address in SSDP response */
-                    if ( (host_start = strstr(url_start, "http://")) != NULL )
-                    {
+                    if ( (host_start = strstr(url_start, "http://")) != NULL ) {
                         host_start += 7;    /* Move past "http://" */
 
-                        if ( (host_end = strstr(host_start, ":")) != NULL )
-                        {
+                        if ( (host_end = strstr(host_start, ":")) != NULL ) {
                             strncpy(host, host_start, host_end - host_start);
                             host[host_end - host_start] = '\0';
 
                             /* Add host to vector if we haven't done so already */
-                            if ( str_vector_search(vector, host) == FALSE )
-                            {
+                            if ( str_vector_search(vector, host) == FALSE ) {
                                 str_vector_add(vector, host);
                                 printf("%s", host);
 
                                 /* Are we doing lookups? */
-                                if ( opt_dns_lookup == TRUE )
-                                {
+                                if ( opt_dns_lookup == TRUE ) {
                                     char name[NI_MAXHOST];
                                     name[0] = '\0';
 
-                                    if ( (dns_lookup(host, name, NI_MAXHOST)) == 0 )
-                                    {
+                                    if ( (dns_lookup(host, name, NI_MAXHOST)) == 0 ) {
                                         printf("\t%s", name);
                                     }
                                 }
@@ -187,18 +167,14 @@ int discover_hosts (struct str_vector *vector)
                         }
                     }
                 }
-            }
-            else
-            {
+            } else {
                 fprintf(stderr, "[Unexpected SSDP response]\n");
-                if ( opt_verbose == TRUE )
-                {
+                if ( opt_verbose == TRUE ) {
                     printf("%s\n\n", buffer);
                 }
             }
         }
-        else
-        {
+        else {
             /* select() timed out, so we're done */
             done = TRUE;
         }
@@ -220,8 +196,7 @@ int discover_hosts (struct str_vector *vector)
  * Returns: 0 on success
  * *******************************************************************
  */
-int dns_lookup(char *ip_addr, char *hostname, int hostname_size)
-{
+int dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
     int ret;
     struct sockaddr_in sa;
 
@@ -230,8 +205,7 @@ int dns_lookup(char *ip_addr, char *hostname, int hostname_size)
     inet_pton(AF_INET, ip_addr, &sa.sin_addr);
 
     if ( (ret = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
-                            hostname, hostname_size, NULL, 0, 0)) != 0 )
-    {
+                            hostname, hostname_size, NULL, 0, 0)) != 0 ) {
         fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(ret));
     }
 
@@ -246,14 +220,11 @@ int dns_lookup(char *ip_addr, char *hostname, int hostname_size)
  * Returns: 0 on success, exits on failure
  * *******************************************************************
  */
-int parse_cmd_opts (int argc, char *argv[])
-{
+int parse_cmd_opts (int argc, char *argv[]) {
     int cmdopt;
 
-    while ( (cmdopt = getopt(argc, argv, "p:rv")) != -1 )
-    {
-        switch (cmdopt)
-        {
+    while ( (cmdopt = getopt(argc, argv, "p:rv")) != -1 ) {
+        switch (cmdopt) {
             case 'p':
                 opt_source_port = atoi(optarg);
                 break;
