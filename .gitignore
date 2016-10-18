@@ -30,6 +30,7 @@
 
 # Debug files
 *.dSYM/
+*.DS_Store
 *.su
 
 # User-specific stuff:
