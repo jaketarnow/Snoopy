@@ -14,7 +14,6 @@
     <list default="true" id="55d5fd7c-d361-42fe-ab8f-46cd8ebff72a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/upnp" afterPath="$PROJECT_DIR$/upnp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.c" afterPath="$PROJECT_DIR$/main.c" />
     </list>
     <ignored path="UpnpDiscover.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,8 +36,8 @@
       <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="152" column="51" selection-start-line="152" selection-start-column="51" selection-end-line="152" selection-end-column="51" />
+            <state relative-caret-position="195">
+              <caret line="52" column="38" selection-start-line="52" selection-start-column="38" selection-end-line="52" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -97,10 +96,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="204" />
-    <option name="y" value="23" />
+    <option name="x" value="90" />
+    <option name="y" value="158" />
     <option name="width" value="1045" />
-    <option name="height" value="690" />
+    <option name="height" value="727" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -363,19 +362,21 @@
       <workItem from="1476298037671" duration="143000" />
       <workItem from="1476298244332" duration="576000" />
       <workItem from="1476300248729" duration="2101000" />
+      <workItem from="1476465917913" duration="871000" />
+      <workItem from="1476722534179" duration="57000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31597000" />
+    <option name="totallyTimeSpent" value="32525000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="204" y="23" width="1045" height="690" extended-state="0" />
+    <frame x="90" y="158" width="1045" height="727" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13779904" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12882447" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12158055" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="LuaJ" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937685" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -731,8 +732,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="152" column="51" selection-start-line="152" selection-start-column="51" selection-end-line="152" selection-end-column="51" />
+        <state relative-caret-position="195">
+          <caret line="52" column="38" selection-start-line="52" selection-start-column="38" selection-end-line="52" selection-end-column="38" />
           <folding />
         </state>
       </provider>
