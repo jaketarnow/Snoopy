@@ -23,7 +23,7 @@
     self = [super init];
     if(self)
     {
-        self.delegate = delegate;
+		self.delegate = delegate;
     }
     return self;
 }
@@ -36,16 +36,14 @@
     //self.netMask = @"255.255.255.0";
     NSArray *a = [self.localAddress componentsSeparatedByString:@"."];
     NSArray *b = [self.netMask componentsSeparatedByString:@"."];
-    NSLog(@"A %@ %d", self.localAddress,[self isIpAddressValid:self.localAddress]);
     if ([self isIpAddressValid:self.localAddress] && (a.count == 4) && (b.count == 4)) {
         for (int i = 0; i<4; i++) {
-            
-            long and =  (long)[[a objectAtIndex:i] integerValue] & [[b objectAtIndex:i] integerValue];
+            int and = [[a objectAtIndex:i] integerValue] & [[b objectAtIndex:i] integerValue];
             if (!self.baseAddress.length) {
-                self.baseAddress = [NSString stringWithFormat:@"%ld", and];
+                self.baseAddress = [NSString stringWithFormat:@"%d", and];
             }
             else {
-                self.baseAddress = [NSString stringWithFormat:@"%@.%ld", self.baseAddress, and];
+                self.baseAddress = [NSString stringWithFormat:@"%@.%d", self.baseAddress, and];
                 self.currentHostAddress = and;
                 self.baseAddressEnd = and;
             }
@@ -61,21 +59,27 @@
 
 - (void)pingAddress{
     self.currentHostAddress++;
-    NSString *address = [NSString stringWithFormat:@"%@%ld", self.baseAddress, (long)self.currentHostAddress];
+    NSString *address = [NSString stringWithFormat:@"%@%d", self.baseAddress, self.currentHostAddress];
     [SimplePingHelper ping:address target:self sel:@selector(pingResult:)];
     if (self.currentHostAddress>=254) {
         [self.timer invalidate];
     }
 }
-
+/*
+ - (void)pingAddress:(NSString *)address{
+ [SimplePingHelper ping:address target:self sel:@selector(pingResult:)];
+ }
+ */
 - (void)pingResult:(NSNumber*)success {
     self.timerIterationNumber++;
     if (success.boolValue) {
-        NSString *deviceIPAddress = [[[[NSString stringWithFormat:@"%@%ld", self.baseAddress, self.currentHostAddress] stringByReplacingOccurrencesOfString:@".0" withString:@"."] stringByReplacingOccurrencesOfString:@".00" withString:@"."] stringByReplacingOccurrencesOfString:@".." withString:@".0."];
-        NSString *deviceName = [self getHostFromIPAddress:[[NSString stringWithFormat:@"%@%ld", self.baseAddress, self.currentHostAddress] cStringUsingEncoding:NSASCIIStringEncoding]];
+        NSLog(@"SUCCESS");
+        NSString *deviceIPAddress = [[[[NSString stringWithFormat:@"%@%d", self.baseAddress, self.currentHostAddress] stringByReplacingOccurrencesOfString:@".0" withString:@"."] stringByReplacingOccurrencesOfString:@".00" withString:@"."] stringByReplacingOccurrencesOfString:@".." withString:@".0."];
+        NSString *deviceName = [self getHostFromIPAddress:[[NSString stringWithFormat:@"%@%d", self.baseAddress, self.currentHostAddress] cStringUsingEncoding:NSASCIIStringEncoding]];
         [self.delegate scanLANDidFindNewAdrress:deviceIPAddress havingHostName:deviceName];
     }
     else {
+        NSLog(@"FAILURE");
     }
     if (self.timerIterationNumber+self.baseAddressEnd>=254) {
         [self.delegate scanLANDidFinishScanning];
@@ -104,9 +108,11 @@
         }
         else
         {
+            NSLog (@"Found hostname: %s", hostname);
             hostName = [NSString stringWithFormat:@"%s", hostname];
             break;
         }
+        freeaddrinfo(results);
     }
     return hostName;
 }

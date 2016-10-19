@@ -14,7 +14,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+	// Do any additional setup after loading the view, typically from a nib.
     UIBarButtonItem *refreshBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(startScanningLAN)];
     self.navigationItem.rightBarButtonItem = refreshBarButton;
 }
@@ -64,6 +64,9 @@
     
     return cell;
 }
+
+
+
 
 /*
  // Override to support conditional editing of the table view.

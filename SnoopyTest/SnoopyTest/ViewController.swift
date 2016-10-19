@@ -11,7 +11,7 @@ import Foundation
 import SystemConfiguration.CaptiveNetwork
 
 /* Create a class to grab the SSID */
-public class SSID {
+open class SSID {
     class func getSSID() ->  String {
         var currentSSID = ""
         //Returns the names of all network interfaces Captive Network Support is monitoring
@@ -21,15 +21,15 @@ public class SSID {
             
             let interfacesArray = Array(arrayLiteral: interfaces) //cast the interfaces into an Array
             if interfacesArray.count > 0 {
-                let interfaceName =  String(interfacesArray[0]) //grab the first one
-                let rec = unsafeBitCast(interfaceName, AnyObject.self)
+                let interfaceName =  String(describing: interfacesArray[0]) //grab the first one
+                let rec = unsafeBitCast(interfaceName, to: AnyObject.self)
                 //Returns the current network info for a given network interface
                 //A dictionary containing the interface’s current network info.
-                let unsafeInterfaceData = CNCopyCurrentNetworkInfo("\(rec)")
+                let unsafeInterfaceData = CNCopyCurrentNetworkInfo("\(rec)" as CFString)
                 if unsafeInterfaceData != nil {
                     let interfaceData = unsafeInterfaceData! as Dictionary!
-                    currentSSID = interfaceData[kCNNetworkInfoKeySSID] as! String
-                    let ssiddata = NSString(data:interfaceData[kCNNetworkInfoKeySSIDData]! as! NSData, encoding:NSUTF8StringEncoding) as! String
+                    currentSSID = interfaceData?[kCNNetworkInfoKeySSID] as! String
+                    let ssiddata = NSString(data:interfaceData![kCNNetworkInfoKeySSIDData]! as! Data, encoding:String.Encoding.utf8.rawValue) as! String
                     // ssid data from hex
                 }
             }
@@ -42,7 +42,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var ssid: UILabel!
     @IBOutlet weak var refresh: UIButton!
     
-    func update(button: UIButton) {
+    func update(_ button: UIButton) {
         ssid.text = SSID.getSSID()
     }
 
@@ -57,7 +57,7 @@ class ViewController: UIViewController {
         }
         print("HEREREERE", SSID.getSSID())
         
-        refresh.addTarget(self, action: #selector(ViewController.update(_:)), forControlEvents: .TouchUpInside)
+        refresh.addTarget(self, action: #selector(ViewController.update(_:)), for: .touchUpInside)
     }
 
     override func didReceiveMemoryWarning() {
