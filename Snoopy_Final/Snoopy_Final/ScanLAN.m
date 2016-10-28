@@ -202,6 +202,7 @@
 /* Call UPNP Discovery and parse DNS lookup to gather IP address and HostName */
 - (void)getUpnpDiscovery {
     char *argv[] = {"-r"};
+    NSLog(@"IN UPNP DISCOVERY");
     NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
     
     NSLog(@"C Output %@", string);

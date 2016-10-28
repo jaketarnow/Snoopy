@@ -15,6 +15,7 @@
 
 #define SSDP_MULTICAST_ADDRESS      "239.255.255.250"
 #define SSDP_MULTICAST_PORT         1900
+#define MAX_NUM_HOSTS               50
 
 #define MAX_BUFFER_LEN              8192
 
@@ -25,13 +26,21 @@ int opt_verbose = FALSE;
 int opt_dns_lookup = FALSE;
 
 /* Functions */
-int discover_hosts (struct str_vector *vector);
-int dns_lookup(char *ip_addr, char *hostname, int hostname_size);
+char **discover_hosts (struct str_vector *vector);
+char **dns_lookup(char *ip_addr, char *hostname, int hostname_size);
+char **scanUPNP (int argc, char *argv[]);
 int parse_cmd_opts (int argc, char *argv[]);
 
 
-int main (int argc, char *argv[]) {
-    int ret;
+int main () {
+    char *array[MAX_NUM_HOSTS];
+    array[0] = "-r";
+    scanUPNP(1, array);
+    return 1;
+}
+
+char **scanUPNP (int argc, char *argv[]) {
+    char **ret;
     struct str_vector my_vector;
 
     parse_cmd_opts(argc, argv);
@@ -53,8 +62,13 @@ int main (int argc, char *argv[]) {
  * Returns: 0 on success, -1 otherwise
  * *******************************************************************
  */
-int discover_hosts (struct str_vector *vector) {
+char **discover_hosts (struct str_vector *vector) {
     int ret, sock, bytes_in, done = FALSE;
+
+    /* need to set malloc for char * array */
+    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
+    int addHost = 0;
+
     unsigned int host_sock_len;
     struct sockaddr_in src_sock, dest_sock, host_sock;
     char buffer[MAX_BUFFER_LEN];
@@ -73,7 +87,7 @@ int discover_hosts (struct str_vector *vector) {
     /* Get a socket */
     if ((sock = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
         perror("socket()");
-        return(-1);
+        exit(1);
     }
 
     /* Bind client-side (source) port to socket */
@@ -85,7 +99,7 @@ int discover_hosts (struct str_vector *vector) {
     if ( (bind(sock, (struct sockaddr *)&src_sock,
                sizeof(src_sock))) == -1 ) {
         perror("bind()");
-        return(-1);
+        exit(1);
     }
     else if ( (opt_verbose == TRUE) && (opt_source_port != 0) )
         printf("[Client bound to port %d]\n\n", opt_source_port);
@@ -102,13 +116,15 @@ int discover_hosts (struct str_vector *vector) {
                        (struct sockaddr*) &dest_sock,
                        sizeof(dest_sock))) == -1) {
         perror("sendto()");
-        return(-1);
+        exit(1);
     } else if (ret != strlen(ssdp_discover_string)) {
         fprintf(stderr, "sendto(): only sent %d of %d bytes\n",
                 ret, (int)strlen(ssdp_discover_string));
-        return(-1);
-    } else if ( opt_verbose == TRUE )
-        printf("%s\n", ssdp_discover_string);
+        exit(1);
+    } else if ( opt_verbose == TRUE ) {
+        hostArray[addHost++] = ssdp_discover_string;
+        //printf("%s\n", ssdp_discover_string);
+    }
 
     /* Get SSDP response */
     FD_ZERO(&read_fds);
@@ -120,7 +136,7 @@ int discover_hosts (struct str_vector *vector) {
     do {
         if (select(sock+1, &read_fds, NULL, NULL, &timeout) == -1) {
             perror("select()");
-            return(-1);
+            exit(1);
         }
 
         if (FD_ISSET(sock, &read_fds)) {
@@ -128,7 +144,7 @@ int discover_hosts (struct str_vector *vector) {
             if ((bytes_in = recvfrom(sock, buffer, sizeof(buffer), 0,
                                      &host_sock, &host_sock_len)) == -1) {
                 perror("recvfrom()");
-                return(-1);
+                exit(1);
             }
             buffer[bytes_in] = '\0';
 
@@ -150,7 +166,8 @@ int discover_hosts (struct str_vector *vector) {
                             /* Add host to vector if we haven't done so already */
                             if ( str_vector_search(vector, host) == FALSE ) {
                                 str_vector_add(vector, host);
-                                printf("%s", host);
+//                                printf("%s", host);
+                                hostArray[addHost++] = host;
 
                                 /* Are we doing lookups? */
                                 if ( opt_dns_lookup == TRUE ) {
@@ -158,7 +175,8 @@ int discover_hosts (struct str_vector *vector) {
                                     name[0] = '\0';
 
                                     if ( (dns_lookup(host, name, NI_MAXHOST)) == 0 ) {
-                                        printf("\t%s", name);
+//                                        printf("\t%s", name);
+                                        hostArray[addHost++] = name;
                                     }
                                 }
 
@@ -179,12 +197,12 @@ int discover_hosts (struct str_vector *vector) {
             done = TRUE;
         }
 
-    } while ( done == FALSE );
+    } while ( done == FALSE || addHost < MAX_NUM_HOSTS );
 
     if ( close(sock) == -1 )
         perror("close()");
 
-    return(0);
+    return hostArray;
 }
 
 
@@ -196,20 +214,20 @@ int discover_hosts (struct str_vector *vector) {
  * Returns: 0 on success
  * *******************************************************************
  */
-int dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
-    int ret;
+char **dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
+    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
     struct sockaddr_in sa;
 
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     inet_pton(AF_INET, ip_addr, &sa.sin_addr);
 
-    if ( (ret = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
-                            hostname, hostname_size, NULL, 0, 0)) != 0 ) {
-        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(ret));
+    if ( (**hostArray = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
+                                    hostname, hostname_size, NULL, 0, 0)) != 0 ) {
+        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(**hostArray));
     }
 
-    return(ret);
+    return(hostArray);
 }
 
 
