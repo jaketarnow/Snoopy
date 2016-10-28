@@ -27,7 +27,7 @@ int opt_dns_lookup = FALSE;
 
 /* Functions */
 char **discover_hosts (struct str_vector *vector);
-int dns_lookup(char *ip_addr, char *hostname, int hostname_size);
+char **dns_lookup(char *ip_addr, char *hostname, int hostname_size);
 int parse_cmd_opts (int argc, char *argv[]);
 
 
@@ -206,20 +206,20 @@ char **discover_hosts (struct str_vector *vector) {
  * Returns: 0 on success
  * *******************************************************************
  */
-int dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
-    int ret;
+char **dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
+    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
     struct sockaddr_in sa;
     
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     inet_pton(AF_INET, ip_addr, &sa.sin_addr);
     
-    if ( (ret = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
+    if ( (**hostArray = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
                             hostname, hostname_size, NULL, 0, 0)) != 0 ) {
-        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(ret));
+        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(**hostArray));
     }
     
-    return(ret);
+    return(hostArray);
 }
 
 

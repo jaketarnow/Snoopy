@@ -34,8 +34,8 @@
     NSLog(@"start scan");
     self.localAddress = [self localIPAddress];
     //This is used to test on the simulator
-    //self.localAddress = @"192.168.1.8";
-    //self.netMask = @"255.255.255.0";
+    self.localAddress = @"192.168.1.8";
+    self.netMask = @"255.255.255.0";
     NSArray *a = [self.localAddress componentsSeparatedByString:@"."];
     NSArray *b = [self.netMask componentsSeparatedByString:@"."];
     if ([self isIpAddressValid:self.localAddress] && (a.count == 4) && (b.count == 4)) {
