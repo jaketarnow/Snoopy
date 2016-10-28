@@ -1,5 +1,6 @@
 #import "ViewController.h"
 #import "Device.h"
+#import "ScanLAN.h"
 
 @interface ViewController ()
 
@@ -25,6 +26,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
+  //  [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning

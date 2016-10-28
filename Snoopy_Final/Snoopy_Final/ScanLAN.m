@@ -3,6 +3,8 @@
 #import <arpa/inet.h>
 #include <netdb.h>
 #import "SimplePingHelper.h"
+#include "ScanUPNP.h"
+#include "utils.h"
 
 @interface ScanLAN ()
 
@@ -125,6 +127,7 @@
     NSString *wifiAddress = nil;
     NSString *cellAddress = nil;
     
+    
     // retrieve the current interfaces - returns 0 on success
     if(!getifaddrs(&interfaces)) {
         // Loop through linked list of interfaces
@@ -194,6 +197,14 @@
     int success = inet_aton([ipAddress UTF8String],&pin);
     if (success == 1) return TRUE;
     return FALSE;
+}
+
+/* Call UPNP Discovery and parse DNS lookup to gather IP address and HostName */
+- (void)getUpnpDiscovery {
+    char *argv[] = {"-r"};
+    NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
+    
+    NSLog(@"C Output %@", string);
 }
 
 @end

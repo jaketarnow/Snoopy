@@ -14,5 +14,6 @@
 - (id)initWithDelegate:(id<ScanLANDelegate>)delegate;
 - (void)startScan;
 - (void)stopScan;
+- (void)getUpnpDiscovery;
 
 @end
