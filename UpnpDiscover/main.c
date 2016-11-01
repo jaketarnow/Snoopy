@@ -15,7 +15,7 @@
 
 #define SSDP_MULTICAST_ADDRESS      "239.255.255.250"
 #define SSDP_MULTICAST_PORT         1900
-#define MAX_NUM_HOSTS               50
+#define MAX_NUM_HOSTS               25
 
 #define MAX_BUFFER_LEN              8192
 
@@ -49,6 +49,13 @@ char **scanUPNP (int argc, char *argv[]) {
 
     ret = discover_hosts(&my_vector);
 
+    printf("\nHost Discovery Complete\n\n");
+
+    int i = 0;
+    for (; i < (MAX_NUM_HOSTS * 2); i++) {
+        printf("%d:\t%s\n", i, ret[i]);
+    }
+
     str_vector_free(&my_vector);
 
     return(ret);
@@ -66,7 +73,10 @@ char **discover_hosts (struct str_vector *vector) {
     int ret, sock, bytes_in, done = FALSE;
 
     /* need to set malloc for char * array */
-    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
+
+    char **hostArray = (char **)malloc(2 * sizeof(char *) * MAX_NUM_HOSTS);
+    // char *hostArray[MAX_NUM_HOSTS];
+
     int addHost = 0;
 
     unsigned int host_sock_len;
@@ -132,6 +142,8 @@ char **discover_hosts (struct str_vector *vector) {
     timeout.tv_sec = 5;
     timeout.tv_usec = 0;
 
+    printf("\n");
+
     /* Loop through SSDP discovery request responses */
     do {
         if (select(sock+1, &read_fds, NULL, NULL, &timeout) == -1) {
@@ -146,6 +158,7 @@ char **discover_hosts (struct str_vector *vector) {
                 perror("recvfrom()");
                 exit(1);
             }
+
             buffer[bytes_in] = '\0';
 
             if (strncmp(buffer, "HTTP/1.1 200 OK", 12) == 0) {
@@ -168,19 +181,19 @@ char **discover_hosts (struct str_vector *vector) {
                                 str_vector_add(vector, host);
 //                                printf("%s", host);
                                 hostArray[addHost++] = host;
+                                printf("%d: \t%s\n", addHost, host);
 
                                 /* Are we doing lookups? */
-                                if ( opt_dns_lookup == TRUE ) {
-                                    char name[NI_MAXHOST];
-                                    name[0] = '\0';
+//                                 if ( opt_dns_lookup == TRUE ) {
+//                                     char name[NI_MAXHOST];
+//                                     name[NI_MAXHOST - 1] = '\0';
 
-                                    if ( (dns_lookup(host, name, NI_MAXHOST)) == 0 ) {
-//                                        printf("\t%s", name);
-                                        hostArray[addHost++] = name;
-                                    }
-                                }
-
-                                printf("\n");
+//                                     if (dns_lookup(host, name, NI_MAXHOST)) {
+// //                                        printf("\t%s", name);
+//                                         hostArray[addHost++] = name;
+//                                         printf("%d\t: %s\n", addHost, name);
+//                                     }
+//                                 }
                             }
                         }
                     }
@@ -197,7 +210,7 @@ char **discover_hosts (struct str_vector *vector) {
             done = TRUE;
         }
 
-    } while ( done == FALSE || addHost < MAX_NUM_HOSTS );
+    } while ( done == FALSE && addHost < MAX_NUM_HOSTS );
 
     if ( close(sock) == -1 )
         perror("close()");
