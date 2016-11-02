@@ -205,6 +205,16 @@
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
     NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
+    NSLog(@"String length %d", string.length);
+//    for (int i = 0; i < string.length; i++) {
+//        NSString *pattern = @"(\t)(.*)(\n)";
+//        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+//                                                                               options:0 error:NULL];
+//        NSTextCheckingResult *match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
+//        NSString *s2 = [string substringWithRange:[match rangeAtIndex:0]];
+//        [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:s2];
+//    }
+    
     [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
     NSLog(@"C Output %@", string);
 }
