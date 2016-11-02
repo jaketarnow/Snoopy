@@ -205,7 +205,7 @@
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
     NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
-    NSLog(@"String length %d", string.length);
+    
 //    for (int i = 0; i < string.length; i++) {
 //        NSString *pattern = @"(\t)(.*)(\n)";
 //        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
@@ -216,7 +216,26 @@
 //    }
     
     [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
+    
     NSLog(@"C Output %@", string);
+}
+
+- (void)archiveUpnpFindings:(NSString *)string {
+    //Determine path to archive findings for later diagnostics
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
+    //Archive upnp discovery
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
+}
+
+- (NSString *)unarchiveFindings:(NSString *)string {
+    //Determine path to archive findings for later diagnostics
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
+    
+    //unarchive the data for next run of application
+    NSString *oldString = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+    return oldString;
 }
 
 @end
