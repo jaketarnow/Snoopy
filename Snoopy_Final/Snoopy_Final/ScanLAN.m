@@ -204,7 +204,7 @@
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
     NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
-    
+    [self.delegate scanLANDidFindNewAdrress:string havingHostName:string];
     NSLog(@"C Output %@", string);
 }
 

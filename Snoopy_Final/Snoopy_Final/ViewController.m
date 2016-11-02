@@ -39,7 +39,7 @@
     [self.lanScanner stopScan];
     self.lanScanner = [[ScanLAN alloc] initWithDelegate:self];
     self.connctedDevices = [[NSMutableArray alloc] init];
-    //[self.lanScanner startScan];
+    [self.lanScanner startScan];
     [self.lanScanner getUpnpDiscovery];
 }
 
