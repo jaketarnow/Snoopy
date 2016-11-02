@@ -78,7 +78,8 @@
         NSLog(@"SUCCESS");
         NSString *deviceIPAddress = [[[[NSString stringWithFormat:@"%@%d", self.baseAddress, self.currentHostAddress] stringByReplacingOccurrencesOfString:@".0" withString:@"."] stringByReplacingOccurrencesOfString:@".00" withString:@"."] stringByReplacingOccurrencesOfString:@".." withString:@".0."];
         NSString *deviceName = [self getHostFromIPAddress:[[NSString stringWithFormat:@"%@%d", self.baseAddress, self.currentHostAddress] cStringUsingEncoding:NSASCIIStringEncoding]];
-        [self.delegate scanLANDidFindNewAdrress:deviceIPAddress havingHostName:deviceName];
+        //[self.delegate scanLANDidFindNewAdrress:deviceIPAddress havingHostName:deviceName];
+         [self.delegate scanLANDidFindNewAdrress:@"ICMP" havingHostName:deviceName];
     }
     else {
         NSLog(@"FAILURE");
@@ -204,7 +205,7 @@
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
     NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
-    [self.delegate scanLANDidFindNewAdrress:string havingHostName:string];
+    [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
     NSLog(@"C Output %@", string);
 }
 
