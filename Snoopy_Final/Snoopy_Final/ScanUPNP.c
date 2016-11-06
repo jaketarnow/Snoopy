@@ -51,6 +51,7 @@ char **scanUPNP (int argc, char *argv[]) {
     
     printf("\nHost Discovery Complete\n\n");
     
+    //output of host array is wrong...
 //    int i = 0;
 //    for (; i < (MAX_NUM_HOSTS * 2); i++) {
 //        //printf("%d:\t%s\n", i, ret[i]);
@@ -214,7 +215,7 @@ char **discover_hosts (struct str_vector *vector) {
     
     if ( close(sock) == -1 )
         perror("close()");
-    
+    //output of host array is wrong... need to double check pointers
     return hostArray;
 }
 
