@@ -33,7 +33,7 @@ int parse_cmd_opts (int argc, char *argv[]);
 
 
 int main () {
-    char *array[MAX_NUM_HOSTS];
+    char *array[1];
     array[0] = "-r";
     scanUPNP(1, array);
     return 1;
@@ -53,7 +53,7 @@ char **scanUPNP (int argc, char *argv[]) {
 
     int i = 0;
     for (; i < (MAX_NUM_HOSTS * 2); i++) {
-        printf("%d:\t%s\n", i, ret[i]);
+        printf("%d:\t%s\t%X\n", i, ret[i], &ret[i]);
     }
 
     str_vector_free(&my_vector);
@@ -74,8 +74,8 @@ char **discover_hosts (struct str_vector *vector) {
 
     /* need to set malloc for char * array */
 
-    char **hostArray = (char **)malloc(2 * sizeof(char *) * MAX_NUM_HOSTS);
-    // char *hostArray[MAX_NUM_HOSTS];
+    char **hostArray = (char **)malloc(sizeof(char *) * MAX_NUM_HOSTS * 2);
+    // char *hostArray[MAX_NUM_HOSTS * 2];
 
     int addHost = 0;
 
@@ -179,9 +179,12 @@ char **discover_hosts (struct str_vector *vector) {
                             /* Add host to vector if we haven't done so already */
                             if ( str_vector_search(vector, host) == FALSE ) {
                                 str_vector_add(vector, host);
-//                                printf("%s", host);
-                                hostArray[addHost++] = host;
-                                printf("%d: \t%s\n", addHost, host);
+
+                                hostArray[addHost] = (char *)malloc(sizeof(char) * strlen(host));
+                                strncpy(hostArray[addHost++], host, strlen(host));
+
+                                printf("%d: \t%s\t%X\n", addHost-1, hostArray[addHost-1], &hostArray[addHost-1]);
+
 
                                 /* Are we doing lookups? */
 //                                 if ( opt_dns_lookup == TRUE ) {
