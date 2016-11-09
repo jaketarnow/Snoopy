@@ -68,6 +68,19 @@
     return cell;
 }
 
+- (IBAction)BtnClicked:(id)sender
+{
+    
+    
+    NSString *str = [[@"Diagnostics for " stringByAppendingString:]];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"HEY"
+                                                    message:@"This is a test"
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
 
 
 /*
