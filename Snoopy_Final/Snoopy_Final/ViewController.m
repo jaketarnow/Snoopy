@@ -61,6 +61,9 @@
 {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
+    //add subclass for table view cell with button in it 
+    
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
@@ -70,10 +73,11 @@
 
 - (IBAction)BtnClicked:(id)sender
 {
-    
-    
-    NSString *str = [[@"Diagnostics for " stringByAppendingString:]];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"HEY"
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
+    Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
+    NSString *test = device.name;
+    NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                     message:@"This is a test"
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
