@@ -205,6 +205,13 @@
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
     NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
+    NSLog(@"TEST TEST %s", *scanUPNP(1, argv));
+    
+   
+    
+    
+    
+    
 
 //    for (int i = 0; i < string.length; i++) {
 //        NSString *pattern = @"(\t)(.*)(\n)";
