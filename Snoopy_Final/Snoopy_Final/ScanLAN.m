@@ -207,18 +207,23 @@
     if (*scanUPNP(1, argv) == nil) {
         return;
     } else {
+        //*string is the result from C scanUPNP
         NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
-        
+        //write the results from the scanUPNP to a file in the user app documents folder
         NSError *error;
         NSString *stringToWrite = string;
         NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"upnpfile.txt"];
         [stringToWrite writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
         
-        NSString *str = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
-        NSLog(@"%@", str);
+        //retreive the file and iterate line by line to parse for self.delegate
         
-        [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
-        NSLog(@"C Output %@", string);
+        NSString *fileContents = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+        for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
+            // Do something
+            [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:line];
+        }
+        //[self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
+       // NSLog(@"C Output %@", string);
     }
 }
 
