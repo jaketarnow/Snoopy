@@ -220,8 +220,14 @@
         NSString *fileContents = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
         for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
             // Do something
+            NSLog(@"IN FILE: @%@", line);
             [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:line];
         }
+        
+        //possibly either way due to depreciated:
+//        NSError* error;
+//        NSString *fileContent = [NSString stringWithContentsOfFile:txtFilePath encoding:NSUTF8StringEncoding error:&error];
+//        NSArray *lines = [fileContent componentsSeparatedByString:@"\n"];
         //[self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
        // NSLog(@"C Output %@", string);
     }
