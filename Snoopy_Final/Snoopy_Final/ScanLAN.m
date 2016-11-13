@@ -204,45 +204,40 @@
 - (void)getUpnpDiscovery {
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
-    NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
-    NSLog(@"TEST TEST %s", *scanUPNP(1, argv));
-    
-   
-    
-    
-    
-    
-
-//    for (int i = 0; i < string.length; i++) {
-//        NSString *pattern = @"(\t)(.*)(\n)";
-//        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
-//                                                                               options:0 error:NULL];
-//        NSTextCheckingResult *match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
-//        NSString *s2 = [string substringWithRange:[match rangeAtIndex:0]];
-//        [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:s2];
-//    }
-    
-    [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
-    
-    NSLog(@"C Output %@", string);
+    if (*scanUPNP(1, argv) == nil) {
+        return;
+    } else {
+        NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
+        
+        NSError *error;
+        NSString *stringToWrite = string;
+        NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"upnpfile.txt"];
+        [stringToWrite writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        
+        NSString *str = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+        NSLog(@"%@", str);
+        
+        [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
+        NSLog(@"C Output %@", string);
+    }
 }
 
-- (void)archiveUpnpFindings:(NSString *)string {
-    //Determine path to archive findings for later diagnostics
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
-    //Archive upnp discovery
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
-}
-
-- (NSString *)unarchiveFindings:(NSString *)string {
-    //Determine path to archive findings for later diagnostics
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
-    
-    //unarchive the data for next run of application
-    NSString *oldString = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
-    return oldString;
-}
+//- (void)archiveUpnpFindings:(NSString *)string {
+//    //Determine path to archive findings for later diagnostics
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
+//    //Archive upnp discovery
+//    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
+//}
+//
+//- (NSString *)unarchiveFindings:(NSString *)string {
+//    //Determine path to archive findings for later diagnostics
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
+//    
+//    //unarchive the data for next run of application
+//    NSString *oldString = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+//    return oldString;
+//}
 
 @end
