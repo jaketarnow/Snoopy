@@ -58,7 +58,7 @@ char **scanUPNP (int argc, char *argv[]) {
 
     int i = 0;
     for (; i < (MAX_NUM_HOSTS * 2); i++) {
-        fprintf("%d:\t%s\t%X\n", i, ret[i], &ret[i]);
+        fprintf(f, "%d:\t%s\t%X\n", i, ret[i], &ret[i]);
     }
     fclose(f);
 

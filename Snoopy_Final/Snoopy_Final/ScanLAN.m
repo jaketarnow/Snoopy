@@ -210,26 +210,22 @@
         //*string is the result from C scanUPNP
         NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
         //write the results from the scanUPNP to a file in the user app documents folder
-        NSError *error;
-        NSString *stringToWrite = string;
-        NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"upnpfile.txt"];
-        [stringToWrite writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
         
         //retreive the file and iterate line by line to parse for self.delegate
         
-        NSString *fileContents = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
-        for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
-            // Do something
-            NSLog(@"IN FILE: @%@", line);
-            [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:line];
-        }
+//        NSString *fileContents = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+//        for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
+//            // Do something
+//            NSLog(@"IN FILE: @%@", line);
+//            [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:line];
+//        }
         
         //possibly either way due to depreciated:
 //        NSError* error;
 //        NSString *fileContent = [NSString stringWithContentsOfFile:txtFilePath encoding:NSUTF8StringEncoding error:&error];
 //        NSArray *lines = [fileContent componentsSeparatedByString:@"\n"];
         //[self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
-       // NSLog(@"C Output %@", string);
+       NSLog(@"C Output %@", string);
     }
 }
 

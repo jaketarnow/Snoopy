@@ -51,10 +51,17 @@ char **scanUPNP (int argc, char *argv[]) {
     
     printf("\nHost Discovery Complete\n\n");
     
-//    int i = 0;
-//    for (; i < (MAX_NUM_HOSTS * 2); i++) {
-//        printf("%d:\t%s\t%X\n", i, ret[i], &ret[i]);
-//    }
+    
+    FILE *f = fopen("upnpfinds.txt", "w");
+    if (f == NULL) {
+        exit(-1);
+    }
+
+    int i = 0;
+    for (; i < (MAX_NUM_HOSTS * 2); i++) {
+        fprintf(f, "%s\n", ret[i]);
+    }
+    fclose(f);
     
     str_vector_free(&my_vector);
     
