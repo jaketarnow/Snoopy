@@ -40,26 +40,30 @@ int parse_cmd_opts (int argc, char *argv[]);
 //}
 
 char **scanUPNP (int argc, char *argv[]) {
-    char **ret;
+    char **ret = (char **)malloc(sizeof(char *) * MAX_NUM_HOSTS * 2);
+    char **tmp;
     struct str_vector my_vector;
     
     parse_cmd_opts(argc, argv);
     
     str_vector_init(&my_vector);
     
-    ret = discover_hosts(&my_vector);
+    tmp = discover_hosts(&my_vector);
+    int i = 0;
+    for (; i < (MAX_NUM_HOSTS * 2); i++)
+         strncpy(ret[i], tmp[i], strlen(tmp[i]));
     
     printf("\nHost Discovery Complete\n\n");
     
     
-    FILE *f = fopen("upnpfinds.txt", "w");
+    FILE *f = fopen("/Users/jacobtarnow/CS699_DirectedStudy/Snoopy/Snoopy_Final/Snoopy_Final/upnpfinds.txt", "w");
     if (f == NULL) {
         exit(-1);
     }
 
-    int i = 0;
+    i = 0;
     for (; i < (MAX_NUM_HOSTS * 2); i++) {
-        fprintf(f, "%s\n", ret[i]);
+        fprintf(f, "%d:\t%s\n", i, ret[i]);
     }
     fclose(f);
     
