@@ -26,7 +26,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-  //  [self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning

@@ -204,28 +204,19 @@
 - (void)getUpnpDiscovery {
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
-    if (*scanUPNP(1, argv) == nil) {
-        return;
-    } else {
-        //*string is the result from C scanUPNP
-        NSString *string = [[NSString alloc] initWithUTF8String:*scanUPNP(1, argv)];
-        //write the results from the scanUPNP to a file in the user app documents folder
-        
-        //retreive the file and iterate line by line to parse for self.delegate
-        
-//        NSString *fileContents = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
-//        for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
-//            // Do something
-//            NSLog(@"IN FILE: @%@", line);
-//            [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:line];
-//        }
-        
-        //possibly either way due to depreciated:
-//        NSError* error;
-//        NSString *fileContent = [NSString stringWithContentsOfFile:txtFilePath encoding:NSUTF8StringEncoding error:&error];
-//        NSArray *lines = [fileContent componentsSeparatedByString:@"\n"];
-        //[self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:string];
-       NSLog(@"C Output %@", string);
+    //*string is the result from C scanUPNP
+    NSLog(@"LOOK AT UPNP RESULT: %s\n", scanUPNP(1, argv));
+    NSString *string = [[NSString alloc] initWithUTF8String:scanUPNP(1, argv)];
+    
+    
+    for (NSString *line in [string componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
+        NSString *trimmedString = [line stringByTrimmingCharactersInSet:
+                                   [NSCharacterSet whitespaceCharacterSet]];
+        if (trimmedString == NULL || [trimmedString isEqual: @""]) {
+            break;
+        }
+        // Do something
+        [self.delegate scanLANDidFindNewAdrress:@"UPNP" havingHostName:line];
     }
 }
 

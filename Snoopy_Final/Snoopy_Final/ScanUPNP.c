@@ -26,9 +26,9 @@ int opt_verbose = FALSE;
 int opt_dns_lookup = FALSE;
 
 /* Functions */
-char **discover_hosts (struct str_vector *vector);
+void discover_hosts (struct str_vector *vector, char **hostarray);
 char **dns_lookup(char *ip_addr, char *hostname, int hostname_size);
-char **scanUPNP (int argc, char *argv[]);
+char *scanUPNP (int argc, char *argv[]);
 int parse_cmd_opts (int argc, char *argv[]);
 
 
@@ -39,37 +39,32 @@ int parse_cmd_opts (int argc, char *argv[]);
 //    return 1;
 //}
 
-char **scanUPNP (int argc, char *argv[]) {
-    char **ret = (char **)malloc(sizeof(char *) * MAX_NUM_HOSTS * 2);
-    char **tmp;
+char *scanUPNP (int argc, char *argv[]) {
+    char **hostarray = (char **)malloc(sizeof(char *) * MAX_NUM_HOSTS);
+
     struct str_vector my_vector;
     
     parse_cmd_opts(argc, argv);
     
     str_vector_init(&my_vector);
     
-    tmp = discover_hosts(&my_vector);
-    int i = 0;
-    for (; i < (MAX_NUM_HOSTS * 2); i++)
-         strncpy(ret[i], tmp[i], strlen(tmp[i]));
+    discover_hosts(&my_vector, hostarray);
     
     printf("\nHost Discovery Complete\n\n");
     
-    
-    FILE *f = fopen("/Users/jacobtarnow/CS699_DirectedStudy/Snoopy/Snoopy_Final/Snoopy_Final/upnpfinds.txt", "w");
-    if (f == NULL) {
-        exit(-1);
+    char* fatString = (char *)malloc(sizeof(char)* MAX_NUM_HOSTS * 18);
+    int i = 0;
+    for (; i < MAX_NUM_HOSTS; i++) {
+        char *tmp = (char *)malloc(sizeof(char) * 10);
+        strncpy(tmp, hostarray[i], strlen(hostarray[i]));
+        strncat(tmp, "\n", 1);
+        strncat(fatString, tmp, strlen(tmp));
     }
-
-    i = 0;
-    for (; i < (MAX_NUM_HOSTS * 2); i++) {
-        fprintf(f, "%d:\t%s\n", i, ret[i]);
-    }
-    fclose(f);
+    printf("IN C FOR UPNP: %s\n", fatString);
     
     str_vector_free(&my_vector);
     
-    return(ret);
+    return fatString;
 }
 
 
@@ -80,12 +75,12 @@ char **scanUPNP (int argc, char *argv[]) {
  * Returns: 0 on success, -1 otherwise
  * *******************************************************************
  */
-char **discover_hosts (struct str_vector *vector) {
+void discover_hosts (struct str_vector *vector, char **hostArray) {
     int ret, sock, bytes_in, done = FALSE;
     
     /* need to set malloc for char * array */
     
-    char **hostArray = (char **)malloc(sizeof(char *) * MAX_NUM_HOSTS * 2);
+//    char **hostArray = (char **)malloc(sizeof(char *) * MAX_NUM_HOSTS);
     // char *hostArray[MAX_NUM_HOSTS * 2];
     
     int addHost = 0;
@@ -194,9 +189,6 @@ char **discover_hosts (struct str_vector *vector) {
                                 hostArray[addHost] = (char *)malloc(sizeof(char) * strlen(host));
                                 strncpy(hostArray[addHost++], host, strlen(host));
                                 
-                                printf("%d: \t%s\t%X\n", addHost-1, hostArray[addHost-1], &hostArray[addHost-1]);
-                                
-                                
                                 /* Are we doing lookups? */
                                 //                                 if ( opt_dns_lookup == TRUE ) {
                                 //                                     char name[NI_MAXHOST];
@@ -215,7 +207,7 @@ char **discover_hosts (struct str_vector *vector) {
             } else {
                 fprintf(stderr, "[Unexpected SSDP response]\n");
                 if ( opt_verbose == TRUE ) {
-                    printf("%s\n\n", buffer);
+                    //printf("%s\n\n", buffer);
                 }
             }
         }
@@ -228,8 +220,6 @@ char **discover_hosts (struct str_vector *vector) {
     
     if ( close(sock) == -1 )
         perror("close()");
-    
-    return hostArray;
 }
 
 
