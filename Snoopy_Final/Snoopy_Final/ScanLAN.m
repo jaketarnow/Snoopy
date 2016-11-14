@@ -205,7 +205,6 @@
     char *argv[] = {"-r"};
     NSLog(@"IN UPNP DISCOVERY");
     //*string is the result from C scanUPNP
-    NSLog(@"LOOK AT UPNP RESULT: %s\n", scanUPNP(1, argv));
     NSString *string = [[NSString alloc] initWithUTF8String:scanUPNP(1, argv)];
     
     
@@ -220,22 +219,22 @@
     }
 }
 
-//- (void)archiveUpnpFindings:(NSString *)string {
-//    //Determine path to archive findings for later diagnostics
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
-//    //Archive upnp discovery
-//    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
-//}
-//
-//- (NSString *)unarchiveFindings:(NSString *)string {
-//    //Determine path to archive findings for later diagnostics
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
-//    
-//    //unarchive the data for next run of application
-//    NSString *oldString = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
-//    return oldString;
-//}
+- (void)archiveUpnpFindings:(NSString *)string {
+    //Determine path to archive findings for later diagnostics
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
+    //Archive upnp discovery
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
+}
+
+- (NSString *)unarchiveFindings:(NSString *)string {
+    //Determine path to archive findings for later diagnostics
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
+    
+    //unarchive the data for next run of application
+    NSString *oldString = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+    return oldString;
+}
 
 @end
