@@ -227,7 +227,7 @@
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
 }
 
-- (NSString *)unarchiveFindings:(NSString *)string {
+- (NSString *)unarchiveFindings {
     //Determine path to archive findings for later diagnostics
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];

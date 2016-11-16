@@ -231,21 +231,21 @@ void discover_hosts (struct str_vector *vector, char **hostArray) {
  * Returns: 0 on success
  * *******************************************************************
  */
-char **dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
-    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
-    struct sockaddr_in sa;
-    
-    memset(&sa, 0, sizeof(sa));
-    sa.sin_family = AF_INET;
-    inet_pton(AF_INET, ip_addr, &sa.sin_addr);
-    
-    if ( (**hostArray = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
-                                    hostname, hostname_size, NULL, 0, 0)) != 0 ) {
-        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(**hostArray));
-    }
-    
-    return(hostArray);
-}
+//char **dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
+//    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
+//    struct sockaddr_in sa;
+//    
+//    memset(&sa, 0, sizeof(sa));
+//    sa.sin_family = AF_INET;
+//    inet_pton(AF_INET, ip_addr, &sa.sin_addr);
+//    
+//    if ( (**hostArray = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
+//                                    hostname, hostname_size, NULL, 0, 0)) != 0 ) {
+//        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(**hostArray));
+//    }
+//    
+//    return(hostArray);
+//}
 
 
 /*

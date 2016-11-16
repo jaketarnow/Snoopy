@@ -21,6 +21,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [self.lanScanner unarchiveFindings];
     [self startScanningLAN];
 }
 
@@ -67,6 +68,9 @@
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
+    
+    [self.lanScanner archiveUpnpFindings:device.name];
+    [self.lanScanner archiveUpnpFindings:device.address];
     
     return cell;
 }

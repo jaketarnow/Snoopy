@@ -15,5 +15,7 @@
 - (void)startScan;
 - (void)stopScan;
 - (void)getUpnpDiscovery;
+- (NSString *)unarchiveFindings;
+- (void)archiveUpnpFindings:(NSString *)string;
 
 @end
