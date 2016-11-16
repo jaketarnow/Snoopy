@@ -219,22 +219,4 @@
     }
 }
 
-- (void)archiveUpnpFindings:(NSString *)string {
-    //Determine path to archive findings for later diagnostics
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
-    //Archive upnp discovery
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:string];
-}
-
-- (NSString *)unarchiveFindings {
-    //Determine path to archive findings for later diagnostics
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"archive.dat"];
-    
-    //unarchive the data for next run of application
-    NSString *oldString = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
-    return oldString;
-}
-
 @end

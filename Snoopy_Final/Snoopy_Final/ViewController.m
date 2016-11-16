@@ -21,7 +21,6 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self.lanScanner unarchiveFindings];
     [self startScanningLAN];
 }
 
@@ -68,9 +67,6 @@
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
-    
-    [self.lanScanner archiveUpnpFindings:device.name];
-    [self.lanScanner archiveUpnpFindings:device.address];
     
     return cell;
 }
@@ -153,6 +149,20 @@
 
 - (void)scanLANDidFinishScanning {
     NSLog(@"Scan finished");
+    
+    NSString *path = [[NSBundle mainBundle] bundlePath];
+    NSString *finalPath = [path stringByAppendingPathComponent:@"Data.plist"];
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:50];
+    for (NSString *device in self.connctedDevices) {
+        [dict setObject:device forKey:@"Connected Devices"];
+    }
+    [dict writeToFile:finalPath atomically:NO];
+    
+    for(NSString *key in [dict allKeys]) {
+        NSLog(@"DICTIONARY %@",[dict objectForKey:key]);
+    }
+    
     [[[UIAlertView alloc] initWithTitle:@"Scan Finished" message:[NSString stringWithFormat:@"Number of devices connected to the Local Area Network : %d", self.connctedDevices.count] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil] show];
 }
 @end
