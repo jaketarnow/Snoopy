@@ -56,9 +56,13 @@ char *scanUPNP (int argc, char *argv[]) {
     int i = 0;
     for (; i < MAX_NUM_HOSTS; i++) {
         char *tmp = (char *)malloc(sizeof(char) * 10);
-        strncpy(tmp, hostarray[i], strlen(hostarray[i]));
-        strncat(tmp, "\n", 1);
-        strncat(fatString, tmp, strlen(tmp));
+        if (hostarray[i] != NULL) {
+            strncpy(tmp, hostarray[i], strlen(hostarray[i]));
+            strncat(tmp, "\n", 1);
+            strncat(fatString, tmp, strlen(tmp));
+        } else {
+            break;
+        }
     }
     printf("IN C FOR UPNP: %s\n", fatString);
     
