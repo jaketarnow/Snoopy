@@ -78,7 +78,8 @@
     return cell;
 }
 
-
+// testDownloadSpeedWithTimeout
+// Not working at moment, but pings USFCA website to download image...idealy just calculate roundtrip time from ping of server (url) and receive of asset... start time and end time should be just receive absolute time get current
 - (void)testDownloadSpeedWithTimout:(NSTimeInterval)timeout completionHandler:(nonnull void (^)(CGFloat megabytesPerSecond, NSError * _Nullable error))completionHandler {
     NSURL *url = [NSURL URLWithString:@"https://srollins.cs.usfca.edu/images/sami_purple.png"];
     
