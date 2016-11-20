@@ -84,7 +84,6 @@
     NSURL *url = [NSURL URLWithString:@"https://srollins.cs.usfca.edu/images/sami_purple.png"];
     
     self.startTime = CFAbsoluteTimeGetCurrent();
-    self.stopTime = self.startTime;
     self.bytesReceived = 0;
     self.speedTestCompletionHandler = completionHandler;
     
@@ -96,12 +95,12 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     self.bytesReceived += 65536;
-    self.stopTime = CFAbsoluteTimeGetCurrent();
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     CFAbsoluteTime elapsed = 50;
-    self.speed = elapsed != 0 ? 65536 / (CFAbsoluteTimeGetCurrent() - self.startTime) / 1024.0 / 1024.0 : -1;
+    self.stopTime = CFAbsoluteTimeGetCurrent();
+    self.speed = _bytesReceived - (self.stopTime - self.startTime);
     
     // treat timeout as no error (as we're testing speed, not worried about whether we got entire resource or not
     
