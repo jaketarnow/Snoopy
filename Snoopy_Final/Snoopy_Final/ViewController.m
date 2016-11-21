@@ -96,7 +96,7 @@
         if (!connectionError) {
             UIImage *img = [[UIImage alloc] initWithData:data];
             // pass the img to your imageview
-            NSLog(@"SUCCESS!");
+            NSLog(@"SUCCESS! @%@", img);
             [timer stopTimer];
             msgSpeed = [timer timeElapsedInMilliseconds];
             NSLog(@"Total time was: %lf milliseconds", msgSpeed);
@@ -107,9 +107,13 @@
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                             message:speedMsg
-                                                           delegate:nil
+                                                           delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil];
+//            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20,20,10,10)];
+//            imageView.contentMode=UIViewContentModeCenter;
+//            [imageView setImage:img];
+//            [alert setValue:imageView forKey:@"accessoryView"];
             [alert show];
 
         }else{
