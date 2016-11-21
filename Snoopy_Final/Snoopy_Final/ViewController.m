@@ -79,37 +79,21 @@
 }
 
 // testDownloadSpeedWithTimeout
-// Not working at moment, but pings USFCA website to download image...idealy just calculate roundtrip time from ping of server (url) and receive of asset... start time and end time should be just receive absolute time get current
 - (void)testDownloadSpeedWithTimout:(NSTimeInterval)timeout completionHandler:(nonnull void (^)(CGFloat megabytesPerSecond, NSError * _Nullable error))completionHandler {
-    NSURL *url = [NSURL URLWithString:@"https://srollins.cs.usfca.edu/images/sami_purple.png"];
-    
-    self.startTime = CFAbsoluteTimeGetCurrent();
-    self.bytesReceived = 0;
-    self.speedTestCompletionHandler = completionHandler;
-    
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-    configuration.timeoutIntervalForResource = timeout;
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-    [[session dataTaskWithURL:url] resume];
+   
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    self.bytesReceived += 65536;
+    
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    CFAbsoluteTime elapsed = 50;
-    self.stopTime = CFAbsoluteTimeGetCurrent();
-    self.speed = _bytesReceived - (self.stopTime - self.startTime);
-    
-    // treat timeout as no error (as we're testing speed, not worried about whether we got entire resource or not
-    
-    if (error == nil || ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorTimedOut)) {
-        self.speedTestCompletionHandler(self.speed, nil);
-    } else {
-        self.speedTestCompletionHandler(self.speed, error);
-    }
+ 
 }
+
+
+
+
 
 - (IBAction)BtnClicked:(id)sender
 {
