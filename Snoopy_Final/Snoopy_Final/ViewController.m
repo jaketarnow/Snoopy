@@ -81,7 +81,7 @@
 
 // testDownloadSpeedWithTimeout
 - (void)testDownloadSpeedWithTimout:(NSTimeInterval)timeout completionHandler:(nonnull void (^)(CGFloat megabytesPerSecond, NSError * _Nullable error))completionHandler {
-    NSURL *url = [NSURL URLWithString:@"https://srollins.cs.usfca.edu/images/sami_purple.png"];
+    NSURL *url = [NSURL URLWithString:@"http://srollins.cs.usfca.edu/images/sami_purple.png"];
     self.startTime = CFAbsoluteTimeGetCurrent();
     self.stopTime = self.startTime;
     self.bytesReceived = 0;
