@@ -107,9 +107,13 @@ static uint16_t in_cksum(const void *buffer, size_t bufferLen)
 
 @property (nonatomic, copy,   readwrite) NSData *           hostAddress;
 @property (nonatomic, assign, readwrite) uint16_t           nextSequenceNumber;
+@property (strong,nonatomic) NSDate *initStart;
 
 - (void)_stopHostResolution;
 - (void)_stopDataTransfer;
+- (void)testPing;
+- (double)getPing;
+
 
 @end
 
@@ -615,6 +619,19 @@ static void HostResolveCallback(CFHostRef theHost, CFHostInfoType typeInfo, cons
     if (self.hostName != nil) {
         self.hostAddress = NULL;
     }
+}
+
+- (void)testPing:(SimplePing *)pinger didSendPacket:(NSData *)packet
+{
+    self.initStart=[NSDate date];
+}
+
+- (double)getPing:(SimplePing *)pinger didReceivePingResponsePacket:(NSData *)packet
+{
+    NSDate *end=[NSDate date];
+    double latency = [end timeIntervalSinceDate:self.initStart]*1000.0;
+    NSLog(@"IN SIMPLE PING @%f", latency);
+    return latency;
 }
 
 @end

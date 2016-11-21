@@ -14,6 +14,7 @@
 @property NSMutableDictionary *dict;
 @property NSString *theSpeed;
 @property CGFloat speed;
+@property SimplePing *sp;
 
 @end
 
@@ -80,27 +81,40 @@
 
 // testDownloadSpeedWithTimeout
 - (void)testDownloadSpeedWithTimout:(NSTimeInterval)timeout completionHandler:(nonnull void (^)(CGFloat megabytesPerSecond, NSError * _Nullable error))completionHandler {
-   
+    NSURL *url = [NSURL URLWithString:@"https://srollins.cs.usfca.edu/images/sami_purple.png"];
+    self.startTime = CFAbsoluteTimeGetCurrent();
+    self.stopTime = self.startTime;
+    self.bytesReceived = 0;
+    self.speedTestCompletionHandler = completionHandler;
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    configuration.timeoutIntervalForResource = timeout;
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    [[session dataTaskWithURL:url] resume];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+//    self.bytesReceived += [data length];
+    self.stopTime = CFAbsoluteTimeGetCurrent();
     
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
- 
+    CFAbsoluteTime elapsed = self.bytesReceived / (CFAbsoluteTimeGetCurrent() - self.startTime);
+    CGFloat speed = elapsed != 0 ? self.bytesReceived / (CFAbsoluteTimeGetCurrent() - self.startTime) / 1024 / 1024.0 : -1;
+    if (error == nil || ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorTimedOut)) {
+        self.speedTestCompletionHandler(speed, nil);
+    } else {
+        self.speedTestCompletionHandler(speed, error);
+    }
 }
-
-
-
-
 
 - (IBAction)BtnClicked:(id)sender
 {
     __block CGFloat msgSpeed;
-    [self testDownloadSpeedWithTimout:5.0 completionHandler:^(CGFloat megabytesPerSecond, NSError *error) {
+    [self testDownloadSpeedWithTimout:10.0 completionHandler:^(CGFloat megabytesPerSecond, NSError *error) {
         msgSpeed = megabytesPerSecond;
-        NSLog(@"IN HERERERE with speed: %@", self.theSpeed);
+        NSLog(@"SPEED IS @%f", msgSpeed);
     }];
     
     NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
@@ -185,10 +199,16 @@
     
     [self.dict setObject:self.connctedDevices forKey:@"Connected Devices"];
     
-//    NSData *dataSave = [NSKeyedArchiver archivedDataWithRootObject:self.dict];
-//    [[NSUserDefaults standardUserDefaults] setObject:dataSave forKey:@"test"];
-//    [[NSUserDefaults standardUserDefaults] synchronize];
-
+    //having data leaks with dictionary and saving to storage file
+    @try{
+        NSData *dataSave = [NSKeyedArchiver archivedDataWithRootObject:self.dict];
+        [[NSUserDefaults standardUserDefaults] setObject:dataSave forKey:@"test"];
+        NSLog(@"DICTIONARY IS: @%@", self.dict);
+        NSLog(@"DICTIONARY IS: @%@", dataSave);
+        // [[NSUserDefaults standardUserDefaults] synchronize];
+    } @catch (NSException* exception) {
+        NSLog(@"Got exception: %@    Reason: %@", exception.name, exception.reason);
+    }
     
     [[[UIAlertView alloc] initWithTitle:@"Scan Finished" message:[NSString stringWithFormat:@"Number of devices connected to the Local Area Network : %d", self.connctedDevices.count] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil] show];
 }

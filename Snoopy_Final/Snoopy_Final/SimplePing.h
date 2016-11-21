@@ -109,6 +109,10 @@
     // Given a valid IP packet contains an ICMP , returns the address of the ICMP header that 
     // follows the IP header.  This doesn't do any significant validation of the packet.
 
+- (void)testPing;
+
+- (double)getPing;
+
 @end
 
 @protocol SimplePingDelegate <NSObject>
