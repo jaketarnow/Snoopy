@@ -30,6 +30,8 @@
 		<dict>
 			<key>http://srollins.cs.usfca.edu/</key>
 			<string></string>
+			<key>http://srollins.cs.usfca.edu/images/sami_purple.png</key>
+			<string></string>
 		</dict>
 	</dict>
 	<key>UIMainStoryboardFile</key>

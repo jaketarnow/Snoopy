@@ -7,8 +7,6 @@
 
 @property (nonatomic) CFAbsoluteTime startTime;
 @property (nonatomic) CFAbsoluteTime stopTime;
-@property (nonatomic) long long bytesReceived;
-@property (nonatomic, copy) void (^speedTestCompletionHandler)(CGFloat megabytesPerSecond, NSError *error);
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property NSMutableArray *connctedDevices;
 @property ScanLAN *lanScanner;
@@ -82,17 +80,16 @@
 
 - (IBAction)BtnClicked:(id)sender
 {
-    __block double msgSpeed;
-    __block long bytesreceived;
     __block BOOL connection = TRUE;
+    __block long bytesreceived;
     Timer *timer = [[Timer alloc] init];
-    NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:0];
-    NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:0];
+    NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:10];
+    NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:10];
     NSString *strImgURLAsString = @"http://srollins.cs.usfca.edu/images/sami_purple.png";
     [strImgURLAsString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *imgURL = [NSURL URLWithString:strImgURLAsString];
-    int i = 0;
-    for (; i < 3; i++) {
+    
+    for (NSUInteger i = 0; i < 11; i++) {
         [timer startTimer];
         // Do some work
         [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
@@ -106,47 +103,21 @@
                 connection = FALSE;
                 NSLog(@"%@",connectionError);
             }
-            [timer stopTimer];
-            msgSpeed = [timer timeElapsedInMilliseconds];
-            [speedArray addObject:[NSNumber numberWithDouble:msgSpeed]];
-            [bytesArray addObject:[NSNumber numberWithLong:bytesreceived]];
         }];
+        [timer stopTimer];
+        double msgSpeed = [timer timeElapsedInMilliseconds];
+        [speedArray addObject:[NSNumber numberWithDouble:msgSpeed]];
+        [bytesArray addObject:[NSNumber numberWithLong:bytesreceived]];
         i++;
     }
     // Average the speed over the 10x downloads
     double totalBytes = 0.0;
     double totalTime = 0.0;
     double avgTime = 0.0;
-    int k = 0;
-    for (NSNumber *speed in speedArray) {
-        double dSpeed = [speed doubleValue];
-        NSLog(@"dSpeed in Array is: %f\n", dSpeed);
-        avgTime += dSpeed;
-        k++;
+    NSUInteger kcount = [speedArray count];
+    for (NSUInteger k = 0; k < kcount; k++) {
+        NSLog(@"\nIN SPEED ARRAY: %@", speedArray[k]);
     }
-    if (k != 0) {
-        totalTime = avgTime/k;
-    }
-    
-    
-    long avgBytes = 0;
-    int m = 0;
-    for (NSNumber *byte in bytesArray) {
-        long dByte = [byte longValue];
-        NSLog(@"dByte in Array is: %ld\n", dByte);
-        avgBytes += dByte;
-        m++;
-    }
-    if (m != 0) {
-        totalBytes = avgBytes/m;
-    }
-    NSLog(@"k: %d\n", k);
-    NSLog(@"m: %d\n", m);
-    NSLog(@"avgBytes: %ld\n", avgBytes);
-    NSLog(@"avgTime: %f\n", avgTime);
-    NSLog(@"TotalTime: %f\n", avgTime);
-    NSLog(@"TotalBytes: %f\n", avgTime);
-    
     
     NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
     
