@@ -107,7 +107,7 @@
             NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
             Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
             NSString *test = device.name;
-            NSString *speedMsg =[NSString stringWithFormat:@"Speed is %f", totalTime];
+            NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalTime, @" mbps"];
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                             message:speedMsg

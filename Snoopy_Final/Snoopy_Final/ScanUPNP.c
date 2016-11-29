@@ -54,9 +54,14 @@ char *scanUPNP (int argc, char *argv[]) {
     
     char* fatString = (char *)malloc(sizeof(char)* MAX_NUM_HOSTS * 18);
     int i = 0;
+    //int j = 0;
     for (; i < MAX_NUM_HOSTS; i++) {
         char *tmp = (char *)malloc(sizeof(char) * 10);
         if (hostarray[i] != NULL) {
+//            for (int k = 0; hostarray[k] != '\0'; k++) {
+//                j++;
+//            }
+//            strncpy(tmp, hostarray[i], j);
             strncpy(tmp, hostarray[i], strlen(hostarray[i]));
             strncat(tmp, "\n", 1);
             strncat(fatString, tmp, strlen(tmp));
