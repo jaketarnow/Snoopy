@@ -35,7 +35,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-    [self.lanScanner getUpnpDiscovery];
+    //[self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,7 +49,7 @@
     self.lanScanner = [[ScanLAN alloc] initWithDelegate:self];
     self.connctedDevices = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
-    [self.lanScanner getUpnpDiscovery];
+    //[self.lanScanner getUpnpDiscovery];
 }
 
 #pragma mark - Table view data source
@@ -84,57 +84,90 @@
 - (IBAction)BtnClicked:(id)sender
 {
     __block double msgSpeed;
-    
+    __block long bytesreceived;
+    __block BOOL connection = TRUE;
     Timer *timer = [[Timer alloc] init];
-    
+    NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:0];
+    NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:0];
     NSString *strImgURLAsString = @"http://srollins.cs.usfca.edu/images/sami_purple.png";
     [strImgURLAsString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *imgURL = [NSURL URLWithString:strImgURLAsString];
-    [timer startTimer];
-    // Do some work
-    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-        if (!connectionError) {
-            UIImage *img = [[UIImage alloc] initWithData:data];
-            // pass the img to your imageview
-            //use compression close to 1.0 from img to data to get bytesreceived
-            NSData *imgdata = UIImagePNGRepresentation(img);
-            unsigned long bytesreceived = imgdata.length;
-            NSLog(@"SUCCESS! @%@", img);
+    int i = 0;
+    for (; i < 10; i++) {
+        [timer startTimer];
+        // Do some work
+        [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+            if (!connectionError) {
+                connection = TRUE;
+                UIImage *img = [[UIImage alloc] initWithData:data];
+                NSData *imgdata = UIImagePNGRepresentation(img);
+                bytesreceived = imgdata.length;
+                NSLog(@"SUCCESS! @%@", img);
+            } else {
+                connection = FALSE;
+                NSLog(@"%@",connectionError);
+            }
             [timer stopTimer];
             msgSpeed = [timer timeElapsedInMilliseconds];
-            double totalTime = bytesreceived/msgSpeed;
-            NSLog(@"Total time was: %lf milliseconds", msgSpeed);
-            NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
-            Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
-            NSString *test = device.name;
-            NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalTime, @" mbps"];
-            NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
-                                                            message:speedMsg
-                                                           delegate:self
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-//            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20,20,10,10)];
-//            imageView.contentMode=UIViewContentModeCenter;
-//            [imageView setImage:img];
-//            [alert setValue:imageView forKey:@"accessoryView"];
-            [alert show];
-
-        }else{
-            NSLog(@"%@",connectionError);
-            [timer stopTimer];
-            NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
-            Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
-            NSString *test = device.name;
-            NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
-                                                            message:@"TEST"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
-        }
-    }];
+            [speedArray addObject:[NSNumber numberWithDouble:msgSpeed]];
+            [bytesArray addObject:[NSNumber numberWithLong:bytesreceived]];
+        }];
+        i++;
+    }
+    // Average the speed over the 10x downloads
+    double totalBytes = 0.0;
+    double totalTime = 0.0;
+    double avgTime = 0.0;
+    int k = 0;
+    for (NSNumber *speed in speedArray) {
+        double dSpeed = [speed doubleValue];
+        avgTime += dSpeed;
+        k++;
+    }
+    if (k != 0) {
+     totalTime = avgTime/k;
+    }
+    
+    
+    long avgBytes = 0;
+    int m = 0;
+    for (NSNumber *byte in bytesArray) {
+        long dByte = [byte longValue];
+        avgBytes += dByte;
+        m++;
+    }
+    if (m != 0) {
+      totalBytes = avgBytes/m;
+    }
+    NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
+    
+    if (connection) {
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
+        Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
+        NSString *test = device.name;
+        double totalSpeed = totalBytes/totalTime;
+        NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalSpeed, @" mbps"];
+        NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
+                                                        message:speedMsg
+                                                       delegate:self
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        
+        [alert show];
+    } else {
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
+        Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
+        NSString *test = device.name;
+        NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
+                                                        message:@"TEST"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        
+        [alert show];
+    }
 }
 
 
