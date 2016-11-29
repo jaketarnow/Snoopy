@@ -96,14 +96,18 @@
         if (!connectionError) {
             UIImage *img = [[UIImage alloc] initWithData:data];
             // pass the img to your imageview
+            //use compression close to 1.0 from img to data to get bytesreceived
+            NSData *imgdata = UIImagePNGRepresentation(img);
+            unsigned long bytesreceived = imgdata.length;
             NSLog(@"SUCCESS! @%@", img);
             [timer stopTimer];
             msgSpeed = [timer timeElapsedInMilliseconds];
+            double totalTime = bytesreceived/msgSpeed;
             NSLog(@"Total time was: %lf milliseconds", msgSpeed);
             NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
             Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
             NSString *test = device.name;
-            NSString *speedMsg =[NSString stringWithFormat:@"Speed is %f", msgSpeed];
+            NSString *speedMsg =[NSString stringWithFormat:@"Speed is %f", totalTime];
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                             message:speedMsg
