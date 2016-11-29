@@ -80,7 +80,6 @@
     return cell;
 }
 
-
 - (IBAction)BtnClicked:(id)sender
 {
     __block double msgSpeed;
@@ -93,7 +92,7 @@
     [strImgURLAsString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *imgURL = [NSURL URLWithString:strImgURLAsString];
     int i = 0;
-    for (; i < 10; i++) {
+    for (; i < 3; i++) {
         [timer startTimer];
         // Do some work
         [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
@@ -121,11 +120,12 @@
     int k = 0;
     for (NSNumber *speed in speedArray) {
         double dSpeed = [speed doubleValue];
+        NSLog(@"dSpeed in Array is: %f\n", dSpeed);
         avgTime += dSpeed;
         k++;
     }
     if (k != 0) {
-     totalTime = avgTime/k;
+        totalTime = avgTime/k;
     }
     
     
@@ -133,41 +133,52 @@
     int m = 0;
     for (NSNumber *byte in bytesArray) {
         long dByte = [byte longValue];
+        NSLog(@"dByte in Array is: %ld\n", dByte);
         avgBytes += dByte;
         m++;
     }
     if (m != 0) {
-      totalBytes = avgBytes/m;
+        totalBytes = avgBytes/m;
     }
+    NSLog(@"k: %d\n", k);
+    NSLog(@"m: %d\n", m);
+    NSLog(@"avgBytes: %ld\n", avgBytes);
+    NSLog(@"avgTime: %f\n", avgTime);
+    NSLog(@"TotalTime: %f\n", avgTime);
+    NSLog(@"TotalBytes: %f\n", avgTime);
+    
+    
     NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
     
-    if (connection) {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
-        Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
-        NSString *test = device.name;
-        double totalSpeed = totalBytes/totalTime;
-        NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalSpeed, @" mbps"];
-        NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
-                                                        message:speedMsg
-                                                       delegate:self
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        
-        [alert show];
-    } else {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
-        Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
-        NSString *test = device.name;
-        NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
-                                                        message:@"TEST"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        
-        [alert show];
-    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if (connection) {
+            NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
+            Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
+            NSString *test = device.name;
+            double totalSpeed = totalBytes/totalTime;
+            NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalSpeed, @" mbps"];
+            NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
+                                                            message:speedMsg
+                                                           delegate:self
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            
+            [alert show];
+        } else {
+            NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
+            Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
+            NSString *test = device.name;
+            NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
+                                                            message:@"TEST"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            
+            [alert show];
+        }
+    });
 }
 
 
