@@ -118,11 +118,20 @@
         NSLog(@"Byte ARRAY: %@",  bytesArray);
         NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
 
+        double totalBytes = 0.0;
+        double totalTimes = 0.0;
         
         for (NSNumber *speed in speedArray) {
             double kSpeed = [speed doubleValue];
-            totalSpeed += kSpeed;
+            totalTimes += kSpeed;
         }
+        for (NSNumber *bytes in bytesArray) {
+            long kByte = [bytes longValue];
+            totalBytes += kByte;
+        }
+        
+        totalSpeed = ((totalBytes/1024)/1024)/totalTimes;
+        
     }];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -130,7 +139,8 @@
             NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
             Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
             NSString *test = device.name;
-            NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalSpeed, @" mbps"];
+            double mbpsSpeed = totalSpeed * 1000;
+            NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %0.2f%@", mbpsSpeed, @" mbps"];
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                             message:speedMsg
