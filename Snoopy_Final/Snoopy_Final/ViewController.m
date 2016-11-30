@@ -66,6 +66,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSUserDefaults* devicesFound = [NSUserDefaults standardUserDefaults];
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
@@ -74,12 +75,14 @@
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
-    
+    [devicesFound setValue:@[device.name] forKey:@"Device"];
+    [devicesFound synchronize];
     return cell;
 }
 
 - (IBAction)BtnClicked:(id)sender
 {
+    NSUserDefaults* devicesFound = [NSUserDefaults standardUserDefaults];
     __block BOOL connection = TRUE;
     __block long bytesreceived;
     __block double totalSpeed;
@@ -134,20 +137,37 @@
         
     }];
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (connection) {
             NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
             Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
             NSString *test = device.name;
+            NSString *found;
+            //add found device to persistent storage with key for future lookup
+            
             double mbpsSpeed = totalSpeed * 1000;
-            NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %0.2f%@", mbpsSpeed, @" mbps"];
+            
+            NSArray *foundDevices = [[devicesFound dictionaryRepresentation] allKeys];
+            for (NSString* key in foundDevices) {
+                if (key == test) {
+                    found = [NSString stringWithFormat:@"%@ has been found again!", key];
+                } else {
+                    found = @"";
+                }
+            }
+            for (NSString* key in foundDevices) {
+                 NSLog(@"value: %@ forKey: %@",[[NSUserDefaults standardUserDefaults] valueForKey:key],key);
+            }
+            
+            
+            NSString *speedMsg = [NSString stringWithFormat:@"Current speed is %0.2f%@%@", mbpsSpeed, @" mbps\n", found];
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                             message:speedMsg
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil];
-            
+        
             [alert show];
         } else {
             NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
@@ -162,6 +182,7 @@
             
             [alert show];
         }
+        
     });
 }
 
