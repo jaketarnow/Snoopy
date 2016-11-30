@@ -14,6 +14,7 @@
 @property NSString *theSpeed;
 @property CGFloat speed;
 @property SimplePing *sp;
+@property NSMutableArray *allCells;
 
 @end
 
@@ -46,6 +47,7 @@
     [self.lanScanner stopScan];
     self.lanScanner = [[ScanLAN alloc] initWithDelegate:self];
     self.connctedDevices = [[NSMutableArray alloc] init];
+    self.allCells = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
     [self.lanScanner getUpnpDiscovery];
 }
@@ -66,17 +68,15 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUserDefaults* devicesFound = [NSUserDefaults standardUserDefaults];
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     //add subclass for table view cell with button in it 
     
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
+    [self.allCells addObject:device.name];
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
-    [devicesFound setValue:@[device.name] forKey:@"Device"];
-    [devicesFound synchronize];
     return cell;
 }
 
@@ -147,18 +147,20 @@
             
             double mbpsSpeed = totalSpeed * 1000;
             
-            NSArray *foundDevices = [[devicesFound dictionaryRepresentation] allKeys];
-            for (NSString* key in foundDevices) {
-                if (key == test) {
-                    found = [NSString stringWithFormat:@"%@ has been found again!", key];
-                } else {
-                    found = @"";
+            NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
+            NSLog(@"\nALL FOUND DEVICES = %@\n", foundDevices);
+            NSLog(@"HEREHEHREHRHE %@",[foundDevices valueForKey:@"Devices"]);
+            for (NSArray* value in [foundDevices valueForKey:@"Devices"]) {
+                for (NSString *testValue in value) {
+                    NSLog(@"KEY IS: %@", testValue);
+                    NSLog(@"Real KEY IS: %s", [testValue isEqualToString:test] ? "TRUE" : "FALSE");
+                    if ([testValue isEqualToString:test] == TRUE) {
+                        found = [NSString stringWithFormat:@"%@ has been found again!", testValue];
+                    } else {
+                        found = [NSString stringWithFormat:@"%@ is a new discovery!", test];
+                    }
                 }
             }
-            for (NSString* key in foundDevices) {
-                 NSLog(@"value: %@ forKey: %@",[[NSUserDefaults standardUserDefaults] valueForKey:key],key);
-            }
-            
             
             NSString *speedMsg = [NSString stringWithFormat:@"Current speed is %0.2f%@%@", mbpsSpeed, @" mbps\n", found];
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
@@ -250,21 +252,11 @@
 
 - (void)scanLANDidFinishScanning {
     NSLog(@"Scan finished");
-
-    self.dict = [[NSMutableDictionary alloc] initWithCapacity:50];
-    
-    [self.dict setObject:self.connctedDevices forKey:@"Connected Devices"];
-    
-    //having data leaks with dictionary and saving to storage file
-    @try{
-        NSData *dataSave = [NSKeyedArchiver archivedDataWithRootObject:self.dict];
-        [[NSUserDefaults standardUserDefaults] setObject:dataSave forKey:@"test"];
-        NSLog(@"DICTIONARY IS: @%@", self.dict);
-        NSLog(@"DICTIONARY IS: @%@", dataSave);
-        // [[NSUserDefaults standardUserDefaults] synchronize];
-    } @catch (NSException* exception) {
-        NSLog(@"Got exception: %@    Reason: %@", exception.name, exception.reason);
-    }
+    NSMutableDictionary *deviceDictionary = [NSMutableDictionary dictionary];
+    [deviceDictionary setValue:self.allCells forKey:@"Devices"];
+    NSUserDefaults* devicesFound = [NSUserDefaults standardUserDefaults];
+    [devicesFound setValue:@[deviceDictionary] forKey:@"Device"];
+    [devicesFound synchronize];
     
     [[[UIAlertView alloc] initWithTitle:@"Scan Finished" message:[NSString stringWithFormat:@"Number of devices connected to the Local Area Network : %d", self.connctedDevices.count] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil] show];
 }
