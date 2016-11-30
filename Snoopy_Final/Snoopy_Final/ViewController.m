@@ -33,7 +33,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-    //[self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning
@@ -47,7 +47,7 @@
     self.lanScanner = [[ScanLAN alloc] initWithDelegate:self];
     self.connctedDevices = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
-    //[self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 #pragma mark - Table view data source
@@ -82,17 +82,19 @@
 {
     __block BOOL connection = TRUE;
     __block long bytesreceived;
+    __block double totalSpeed;
     Timer *timer = [[Timer alloc] init];
-    NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:10];
-    NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:10];
+    NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:100];
+    NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:100];
     NSString *strImgURLAsString = @"http://srollins.cs.usfca.edu/images/sami_purple.png";
     [strImgURLAsString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *imgURL = [NSURL URLWithString:strImgURLAsString];
     
-    for (NSUInteger i = 0; i < 11; i++) {
-        [timer startTimer];
-        // Do some work
-        [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+    
+    // Do some work
+    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        for (int i = 0; i < 5; i++) {
+            [timer startTimer];
             if (!connectionError) {
                 connection = TRUE;
                 UIImage *img = [[UIImage alloc] initWithData:data];
@@ -102,31 +104,32 @@
             } else {
                 connection = FALSE;
                 NSLog(@"%@",connectionError);
+                NSLog(@"\n111- CONNECTION IS FALSE BREAK BREAK BREAK\n");
             }
-        }];
-        [timer stopTimer];
-        double msgSpeed = [timer timeElapsedInMilliseconds];
-        [speedArray addObject:[NSNumber numberWithDouble:msgSpeed]];
-        [bytesArray addObject:[NSNumber numberWithLong:bytesreceived]];
-        i++;
-    }
-    // Average the speed over the 10x downloads
-    double totalBytes = 0.0;
-    double totalTime = 0.0;
-    double avgTime = 0.0;
-    NSUInteger kcount = [speedArray count];
-    for (NSUInteger k = 0; k < kcount; k++) {
-        NSLog(@"\nIN SPEED ARRAY: %@", speedArray[k]);
-    }
-    
-    NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
-    
+            [timer stopTimer];
+            double msgSpeed = [timer timeElapsedInMilliseconds];
+            NSLog(@"\nSPEED IS: %f\n", msgSpeed);
+            [speedArray addObject:[NSNumber numberWithDouble:msgSpeed]];
+            [bytesArray addObject:[NSNumber numberWithLong:bytesreceived]];
+            i++;
+
+        }
+        NSLog(@"SPEED ARRAY: %@",  speedArray);
+        NSLog(@"Byte ARRAY: %@",  bytesArray);
+        NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
+
+        
+        for (NSNumber *speed in speedArray) {
+            double kSpeed = [speed doubleValue];
+            totalSpeed += kSpeed;
+        }
+    }];
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (connection) {
             NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)[[sender superview] superview]];
             Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
             NSString *test = device.name;
-            double totalSpeed = totalBytes/totalTime;
             NSString *speedMsg =[NSString stringWithFormat:@"Current speed is %f%@", totalSpeed, @" mbps"];
             NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
