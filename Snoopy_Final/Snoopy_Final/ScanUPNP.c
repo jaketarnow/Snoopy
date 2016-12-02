@@ -56,6 +56,7 @@ char *scanUPNP (int argc, char *argv[]) {
     int i = 0;
     for (; i < MAX_NUM_HOSTS; i++) {
         char *tmp = (char *)malloc(sizeof(char) * 10);
+        //char tmp[500];
         if (hostarray[i] != NULL) {
             strncpy(tmp, hostarray[i], strlen(hostarray[i]));
             strncat(tmp, "\n", 1);

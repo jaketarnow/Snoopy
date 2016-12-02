@@ -34,7 +34,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-    [self.lanScanner getUpnpDiscovery];
+//    [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,7 +49,7 @@
     self.connctedDevices = [[NSMutableArray alloc] init];
     self.allCells = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
-    [self.lanScanner getUpnpDiscovery];
+//    [self.lanScanner getUpnpDiscovery];
 }
 
 #pragma mark - Table view data source
@@ -93,7 +93,6 @@
     [strImgURLAsString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *imgURL = [NSURL URLWithString:strImgURLAsString];
     
-    
     // Do some work
     [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         for (int i = 0; i < 5; i++) {
@@ -132,7 +131,7 @@
             long kByte = [bytes longValue];
             totalBytes += kByte;
         }
-        
+        //divide by 1024 as you have bytes to kilobytes then divide again for megabytes
         totalSpeed = ((totalBytes/1024)/1024)/totalTimes;
         
     }];
@@ -143,10 +142,9 @@
             Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
             NSString *test = device.name;
             NSString *found;
-            //add found device to persistent storage with key for future lookup
-            
+            //multiply by 1000 for seconds
             double mbpsSpeed = totalSpeed * 1000;
-            
+            //add found device to persistent storage with key for future lookup
             NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
             NSLog(@"\nALL FOUND DEVICES = %@\n", foundDevices);
             NSLog(@"HEREHEHREHRHE %@",[foundDevices valueForKey:@"Devices"]);
@@ -187,6 +185,92 @@
         
     });
 }
+
+- (IBAction)SpeedTestClick:(id)sender
+{
+    __block BOOL connection = TRUE;
+    __block long bytesreceived;
+    __block double totalSpeed;
+    Timer *timer = [[Timer alloc] init];
+    NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:100];
+    NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:100];
+    NSString *strImgURLAsString = @"http://srollins.cs.usfca.edu/images/sami_purple.png";
+    [strImgURLAsString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSURL *imgURL = [NSURL URLWithString:strImgURLAsString];
+    
+    // Do some work
+    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:imgURL] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        for (int i = 0; i < 5; i++) {
+            [timer startTimer];
+            if (!connectionError) {
+                connection = TRUE;
+                UIImage *img = [[UIImage alloc] initWithData:data];
+                NSData *imgdata = UIImagePNGRepresentation(img);
+                bytesreceived = imgdata.length;
+                NSLog(@"SUCCESS! @%@", img);
+            } else {
+                connection = FALSE;
+                NSLog(@"%@",connectionError);
+                NSLog(@"\n111- CONNECTION IS FALSE BREAK BREAK BREAK\n");
+            }
+            [timer stopTimer];
+            double msgSpeed = [timer timeElapsedInMilliseconds];
+            NSLog(@"\nSPEED IS: %f\n", msgSpeed);
+            [speedArray addObject:[NSNumber numberWithDouble:msgSpeed]];
+            [bytesArray addObject:[NSNumber numberWithLong:bytesreceived]];
+            i++;
+            
+        }
+        NSLog(@"SPEED ARRAY: %@",  speedArray);
+        NSLog(@"Byte ARRAY: %@",  bytesArray);
+        NSLog(@"HERE is the connection: %s", connection ? "TRUE" : "FALSE");
+        
+        double totalBytes = 0.0;
+        double totalTimes = 0.0;
+        
+        for (NSNumber *speed in speedArray) {
+            double kSpeed = [speed doubleValue];
+            totalTimes += kSpeed;
+        }
+        for (NSNumber *bytes in bytesArray) {
+            long kByte = [bytes longValue];
+            totalBytes += kByte;
+        }
+        //divide by 1024 as you have bytes to kilobytes then divide again for megabytes
+        totalSpeed = ((totalBytes/1024)/1024)/totalTimes;
+        
+    }];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if (connection) {
+            NSString *test = self.lanScanner.GetCurrentWifiHotSpotName;
+            //multiply by 1000 for seconds
+            double mbpsSpeed = totalSpeed * 1000;
+            
+            NSString *speedMsg = [NSString stringWithFormat:@"Current speed is %0.2f%@", mbpsSpeed, @" mbps\n"];
+            NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
+                                                            message:speedMsg
+                                                           delegate:self
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            
+            [alert show];
+        } else {
+            NSString *test = self.lanScanner.GetCurrentWifiHotSpotName;
+            NSString *diagIp = [NSString stringWithFormat:@"Can't get speed for %@", test];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
+                                                            message:@"TEST"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            
+            [alert show];
+        }
+        
+    });
+}
+
 
 
 

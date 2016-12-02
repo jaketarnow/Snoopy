@@ -5,6 +5,7 @@
 #import "SimplePingHelper.h"
 #include "ScanUPNP.h"
 #include "utils.h"
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 @interface ScanLAN ()
 
@@ -156,6 +157,20 @@
     }
     NSString *addr = wifiAddress ? wifiAddress : cellAddress;
     return addr ? addr : @"0.0.0.0";
+}
+
+- (NSString *)GetCurrentWifiHotSpotName {
+    NSString *wifiName = @"Test";
+    NSArray *ifs = (__bridge_transfer id)CNCopySupportedInterfaces();
+    for (NSString *ifnam in ifs) {
+        NSDictionary *info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifnam);
+        if (info[@"SSID"]) {
+            NSLog(@"IN SSID");
+            wifiName = info[@"SSID"];
+        }
+    }
+    NSLog(@"WiFi Name is: %@", wifiName);
+    return wifiName;
 }
 
 - (NSString *) localIPAddress

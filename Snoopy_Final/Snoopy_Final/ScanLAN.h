@@ -15,5 +15,6 @@
 - (void)startScan;
 - (void)stopScan;
 - (void)getUpnpDiscovery;
-
+- (NSString *)getIPAddress;
+- (NSString *)GetCurrentWifiHotSpotName;
 @end
