@@ -130,6 +130,12 @@
     __block BOOL connection = TRUE;
     __block long bytesreceived;
     __block double totalSpeed;
+    UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    spinner.center = CGPointMake(160, 200);
+    spinner.transform = CGAffineTransformMakeScale(3.50, 3.50);
+    spinner.hidesWhenStopped = YES;
+    [self.view addSubview:spinner];
+    [spinner startAnimating];
     Timer *timer = [[Timer alloc] init];
     NSMutableArray *speedArray = [[NSMutableArray alloc] initWithCapacity:100];
     NSMutableArray *bytesArray = [[NSMutableArray alloc] initWithCapacity:100];
@@ -193,7 +199,7 @@
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil];
-            
+            [spinner stopAnimating];
             [alert show];
         } else {
             NSString *test = self.lanScanner.GetCurrentWifiHotSpotName;
