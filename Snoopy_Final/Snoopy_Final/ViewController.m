@@ -84,6 +84,8 @@
         for (NSString *testValue in value) {
             if ([testValue isEqualToString:test] == TRUE) {
                 [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
+            } else {
+                [cell setBackgroundColor:[UIColor colorWithRed:0.94 green:0.94 blue:0.96 alpha:1.0]];
             }
         }
     }
