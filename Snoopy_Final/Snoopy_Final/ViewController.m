@@ -70,13 +70,23 @@
 {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    NSUserDefaults* devicesFound = [NSUserDefaults standardUserDefaults];
+    NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
     
     //add subclass for table view cell with button in it 
     
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     [self.allCells addObject:device.name];
+    NSString *test = device.name;
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
+    for (NSArray* value in [foundDevices valueForKey:@"Devices"]) {
+        for (NSString *testValue in value) {
+            if ([testValue isEqualToString:test] == TRUE) {
+                [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
+            }
+        }
+    }
     return cell;
 }
 
@@ -97,6 +107,7 @@
             NSLog(@"Real KEY IS: %s", [testValue isEqualToString:test] ? "TRUE" : "FALSE");
             if ([testValue isEqualToString:test] == TRUE) {
                 found = [NSString stringWithFormat:@"%@ has been found again!", testValue];
+                break;
             } else {
                 found = [NSString stringWithFormat:@"%@ is a new discovery!", test];
             }
