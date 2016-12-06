@@ -1,10 +1,6 @@
 //
 //  Timer.m
 //  Snoopy_Final
-//
-//  Created by Jacob Tarnow on 11/21/16.
-//  Copyright © 2016 Smart Touch. All rights reserved.
-//
 
 #import <Foundation/Foundation.h>
 #import "Timer.h"

@@ -1,6 +1,8 @@
 #import "ViewController.h"
 #import "Device.h"
 #import "ScanLAN.h"
+#import "SimplePingHelper.h"
+#import "SimplePing.h"
 #import "Timer.h"
 
 @interface ViewController () <NSURLSessionDelegate, NSURLSessionDataDelegate>
@@ -13,7 +15,6 @@
 @property NSMutableDictionary *dict;
 @property NSString *theSpeed;
 @property CGFloat speed;
-@property SimplePing *sp;
 @property NSMutableArray *allCells;
 
 @end
@@ -216,6 +217,21 @@
         }
         
     });
+}
+
+- (NSUInteger)pingFound:(NSString*)address {
+    SimplePingHelper *spHelp;
+    SimplePing *sp;
+    double result = 0.0;
+    NSData* data = [address dataUsingEncoding:NSUTF8StringEncoding];
+    int j = 0;
+    for (int i = 0; i < 20; i++) {
+        //sp.getPing(data);
+        if (result != 0.0) {
+            j++;
+        }
+    }
+    return j;
 }
 
 

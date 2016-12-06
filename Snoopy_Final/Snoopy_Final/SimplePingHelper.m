@@ -6,6 +6,7 @@
 @property(nonatomic,assign) SEL sel;
 - (id)initWithAddress:(NSString*)address target:(id)_target sel:(SEL)_sel;
 - (void)go;
++ (void)ping;
 @end
 
 @implementation SimplePingHelper

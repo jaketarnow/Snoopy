@@ -36,8 +36,8 @@
 	</dict>
 	<key>UIMainStoryboardFile</key>
 	<string>Main_iPhone</string>
-	<key>UIMainStoryboardFile~ipad</key>
-	<string>Main_iPad</string>
+	<key>UIMainStoryboardFile~iphone</key>
+	<string>Main_iPhone</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string></string>

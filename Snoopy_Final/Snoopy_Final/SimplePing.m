@@ -112,8 +112,7 @@ static uint16_t in_cksum(const void *buffer, size_t bufferLen)
 - (void)_stopHostResolution;
 - (void)_stopDataTransfer;
 - (void)testPing;
-- (double)getPing;
-
+- (double)getPing:(SimplePing *)pinger didReceivePingResponsePacket:(NSData *)packet;
 
 @end
 
