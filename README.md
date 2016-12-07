@@ -29,11 +29,7 @@ One of the main challenges with this project was the UPNP discovery. Implementin
 All of the results from this implementation are that we can discover most hosts on a home network with the given SSID names. Yet, on more secure networks such as university campus' or airports for example, we are unlikely to grab the actual SSID name and are left with the host address. When running the application, we are able to receive n amount of devices and then they are stored in NSUserDefaults at the end of the scan/termination of the app. This allows for peristent storage of devices for next run on that specific network. 
 
 ## ScreenShots
-<img src="https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/AllDevices_withNames.png" width="100" height="150">
-
-<img src="https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/Diagnostics_newDiscovery.png" width="100" height="150">
-
-<img src="https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/ScanFinished.png" width="100" height="150">
+<img src="https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/AllDevices_withNames.png" width="400" height="600"><img src="https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/Diagnostics_newDiscovery.png" width="400" height="600"><img src="https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/ScanFinished.png" width="400" height="600">
 
 
 ## Future Work
