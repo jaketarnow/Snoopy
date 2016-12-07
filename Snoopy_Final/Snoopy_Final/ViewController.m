@@ -16,6 +16,9 @@
 @property NSString *theSpeed;
 @property CGFloat speed;
 @property NSMutableArray *allCells;
+@property NSString *dFound;
+@property NSString *nFound;
+@property BOOL checkFound;
 
 @end
 
@@ -35,7 +38,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-    [self.lanScanner getUpnpDiscovery];
+//    [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,7 +53,7 @@
     self.connctedDevices = [[NSMutableArray alloc] init];
     self.allCells = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
-    [self.lanScanner getUpnpDiscovery];
+//    [self.lanScanner getUpnpDiscovery];
 }
 
 #pragma mark - Table view data source
@@ -78,15 +81,18 @@
     
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     [self.allCells addObject:device.name];
+    [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
     NSString *test = device.name;
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
     for (NSArray* value in [foundDevices valueForKey:@"Devices"]) {
         for (NSString *testValue in value) {
             if ([testValue isEqualToString:test] == TRUE) {
-                [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
-            } else {
+                //found again set to grey
                 [cell setBackgroundColor:[UIColor colorWithRed:0.94 green:0.94 blue:0.96 alpha:1.0]];
+            } else {
+                //new discovery set to blue
+                [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
             }
         }
     }
@@ -103,16 +109,19 @@
     //add found device to persistent storage with key for future lookup
     NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
     NSLog(@"\nALL FOUND DEVICES = %@\n", foundDevices);
-    NSLog(@"HEREHEHREHRHE %@",[foundDevices valueForKey:@"Devices"]);
+    NSLog(@"HEREHEHREHRHE %@",[foundDevices valueForKey:@"Device"]);
     for (NSArray* value in [foundDevices valueForKey:@"Devices"]) {
         for (NSString *testValue in value) {
             NSLog(@"KEY IS: %@", testValue);
             NSLog(@"Real KEY IS: %s", [testValue isEqualToString:test] ? "TRUE" : "FALSE");
             if ([testValue isEqualToString:test] == TRUE) {
-                found = [NSString stringWithFormat:@"%@ has been found again!", testValue];
-                break;
+                self.dFound = [NSString stringWithFormat:@"%@ has been found again!", testValue];
+                found = self.dFound;
+                self.checkFound = TRUE;
             } else {
-                found = [NSString stringWithFormat:@"%@ is a new discovery!", test];
+                self.nFound = [NSString stringWithFormat:@"%@ is a new discovery!", test];
+                found = self.nFound;
+                self.checkFound = FALSE;
             }
         }
     }
