@@ -35,7 +35,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-//    [self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,7 +50,7 @@
     self.connctedDevices = [[NSMutableArray alloc] init];
     self.allCells = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
-//    [self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 #pragma mark - Table view data source
@@ -116,8 +116,17 @@
             }
         }
     }
-            
-    NSString *foundhistory = [NSString stringWithFormat:@"%@", found];
+    
+    int j = 0;
+    for (int i = 0; i < 20; i++) {
+        SimplePing *rez = [SimplePing simplePingWithHostName:test];
+        if (rez != NULL) {
+            j++;
+        }
+    }
+    double reliable = (double)j/20;
+    
+    NSString *foundhistory = [NSString stringWithFormat:@"%@%s%0.2f%s", found, "\nThe device is ", reliable, "reliable"];
     NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                     message:foundhistory
@@ -217,21 +226,6 @@
         }
         
     });
-}
-
-- (NSUInteger)pingFound:(NSString*)address {
-    SimplePingHelper *spHelp;
-    SimplePing *sp;
-    double result = 0.0;
-    NSData* data = [address dataUsingEncoding:NSUTF8StringEncoding];
-    int j = 0;
-    for (int i = 0; i < 20; i++) {
-        //sp.getPing(data);
-        if (result != 0.0) {
-            j++;
-        }
-    }
-    return j;
 }
 
 
