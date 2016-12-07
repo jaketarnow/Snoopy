@@ -28,5 +28,13 @@ One of the main challenges with this project was the UPNP discovery. Implementin
 
 All of the results from this implementation are that we can discover most hosts on a home network with the given SSID names. Yet, on more secure networks such as university campus' or airports for example, we are unlikely to grab the actual SSID name and are left with the host address. When running the application, we are able to receive n amount of devices and then they are stored in NSUserDefaults at the end of the scan/termination of the app. This allows for peristent storage of devices for next run on that specific network. 
 
+## ScreenShots
+![All Devices from scan](https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/AllDevices_withNames.png "All Devices")
+
+![Device is new discovery from scan](https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/Diagnostics_newDiscovery.png "New Discovery")
+
+![Scan Finished](https://github.com/jaketarnow/Snoopy/blob/master/Screenshots/ScanFinished.png "Finished Scan")
+
+
 ## Future Work
 My future work would include working more on the reliability aspect of the app and gathering more diagnostics. The reliability currently is only calculated my number of pings that are returned non-Null to ones that are. Most of the time all of the devices are returned with 100% reliability, yet in the application it shows that sometimes they were previously found, and sometimes they were not. This should go hand-in-hand as that describes the reliability. 
