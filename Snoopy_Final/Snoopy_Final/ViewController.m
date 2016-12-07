@@ -38,7 +38,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self.lanScanner stopScan];
-//    [self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 - (void)didReceiveMemoryWarning
@@ -53,7 +53,7 @@
     self.connctedDevices = [[NSMutableArray alloc] init];
     self.allCells = [[NSMutableArray alloc] init];
     [self.lanScanner startScan];
-//    [self.lanScanner getUpnpDiscovery];
+    [self.lanScanner getUpnpDiscovery];
 }
 
 #pragma mark - Table view data source
