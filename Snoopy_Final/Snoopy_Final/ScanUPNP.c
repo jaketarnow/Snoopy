@@ -74,11 +74,8 @@ char *scanUPNP (int argc, char *argv[]) {
 
 
 /*
- * *******************************************************************
- * Function: discover_hosts()
- * Purpose: Discover UPnP hosts on a network
- * Returns: 0 on success, -1 otherwise
- * *******************************************************************
+ * Discover all hosts via UPNP protocol
+ * http://www.upnp-hacks.org/upnp.html
  */
 void discover_hosts (struct str_vector *vector, char **hostArray) {
     int ret, sock, bytes_in, done = FALSE;
@@ -228,37 +225,8 @@ void discover_hosts (struct str_vector *vector, char **hostArray) {
 }
 
 
-/*
- * *******************************************************************
- * Function: dns_lookup()
- * Purpose: Given an IP address in *ip_addr, return its hostname in
- *           *hostname, not to exeed hostname_size
- * Returns: 0 on success
- * *******************************************************************
- */
-//char **dns_lookup(char *ip_addr, char *hostname, int hostname_size) {
-//    char **hostArray = (char **)malloc(sizeof(char *) + MAX_NUM_HOSTS);
-//    struct sockaddr_in sa;
-//    
-//    memset(&sa, 0, sizeof(sa));
-//    sa.sin_family = AF_INET;
-//    inet_pton(AF_INET, ip_addr, &sa.sin_addr);
-//    
-//    if ( (**hostArray = getnameinfo((struct sockaddr *)&sa, sizeof(sa),
-//                                    hostname, hostname_size, NULL, 0, 0)) != 0 ) {
-//        fprintf(stderr, "getnameinfo(): %s\n", gai_strerror(**hostArray));
-//    }
-//    
-//    return(hostArray);
-//}
-
-
-/*
- * *******************************************************************
- * Function: parse_cmd_opts()
- * Purpose: Given argc and argv[], parse the command line options.
- * Returns: 0 on success, exits on failure
- * *******************************************************************
+/* 
+ * Use of parsing cmd from cmd line
  */
 int parse_cmd_opts (int argc, char *argv[]) {
     int cmdopt;

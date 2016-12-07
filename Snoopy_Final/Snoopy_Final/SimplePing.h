@@ -81,7 +81,6 @@
 
 + (SimplePing *)simplePingWithHostName:(NSString *)hostName;        // chooses first IPv4 address
 + (SimplePing *)simplePingWithHostAddress:(NSData *)hostAddress;    // contains (struct sockaddr)
-- (BOOL)_isValidPingResponsePacket:(NSMutableData *)packet;         // bool response on packet
 
 @property (nonatomic, assign, readwrite) id<SimplePingDelegate> delegate;
 

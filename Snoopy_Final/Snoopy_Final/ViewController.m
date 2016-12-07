@@ -118,15 +118,15 @@
     }
     
     int j = 0;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 50; i++) {
         SimplePing *rez = [SimplePing simplePingWithHostName:test];
         if (rez != NULL) {
             j++;
         }
     }
-    double reliable = (double)j/20;
+    double reliable = ((double)j/50)*100;
     
-    NSString *foundhistory = [NSString stringWithFormat:@"%@%s%0.2f%s", found, "\nThe device is ", reliable, "reliable"];
+    NSString *foundhistory = [NSString stringWithFormat:@"%@%s%0.2f%s", found, "\nThe device is ", reliable, "% reliable"];
     NSString *diagIp = [NSString stringWithFormat:@"Diagnostics for %@", test];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:diagIp
                                                     message:foundhistory
