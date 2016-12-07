@@ -81,7 +81,6 @@
     
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     [self.allCells addObject:device.name];
-    [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
     NSString *test = device.name;
     cell.textLabel.text = device.name;
     cell.detailTextLabel.text = device.address;
@@ -109,7 +108,7 @@
     //add found device to persistent storage with key for future lookup
     NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
     NSLog(@"\nALL FOUND DEVICES = %@\n", foundDevices);
-    NSLog(@"HEREHEHREHRHE %@",[foundDevices valueForKey:@"Device"]);
+    NSLog(@"HEREHEHREHRHE %@",[foundDevices valueForKey:@"Devices"]);
     for (NSArray* value in [foundDevices valueForKey:@"Devices"]) {
         for (NSString *testValue in value) {
             NSLog(@"KEY IS: %@", testValue);
