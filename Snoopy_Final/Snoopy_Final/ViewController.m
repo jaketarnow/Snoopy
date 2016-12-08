@@ -78,7 +78,7 @@
     NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
     
     //add subclass for table view cell with button in it 
-    
+    [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     [self.allCells addObject:device.name];
     NSString *test = device.name;
@@ -89,9 +89,6 @@
             if ([testValue isEqualToString:test] == TRUE) {
                 //found again set to grey
                 [cell setBackgroundColor:[UIColor colorWithRed:0.94 green:0.94 blue:0.96 alpha:1.0]];
-            } else {
-                //new discovery set to blue
-                [cell setBackgroundColor:[UIColor colorWithRed:0.20 green:0.80 blue:1.00 alpha:1.0]];
             }
         }
     }
@@ -105,6 +102,8 @@
     Device *device = [self.connctedDevices objectAtIndex:indexPath.row];
     NSString *test = device.name;
     NSString *found;
+    found = [NSString stringWithFormat:@"%@ is a new discovery!", test];
+    self.checkFound = FALSE;
     //add found device to persistent storage with key for future lookup
     NSArray *foundDevices = [[devicesFound dictionaryRepresentation] objectForKey:@"Device"];
     NSLog(@"\nALL FOUND DEVICES = %@\n", foundDevices);
@@ -114,13 +113,8 @@
             NSLog(@"KEY IS: %@", testValue);
             NSLog(@"Real KEY IS: %s", [testValue isEqualToString:test] ? "TRUE" : "FALSE");
             if ([testValue isEqualToString:test] == TRUE) {
-                self.dFound = [NSString stringWithFormat:@"%@ has been found again!", testValue];
-                found = self.dFound;
+                found = [NSString stringWithFormat:@"%@ has been found again!", testValue];
                 self.checkFound = TRUE;
-            } else {
-                self.nFound = [NSString stringWithFormat:@"%@ is a new discovery!", test];
-                found = self.nFound;
-                self.checkFound = FALSE;
             }
         }
     }
