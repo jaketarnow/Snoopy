@@ -10,7 +10,7 @@ Snoopy is a network wifi scanner to view all devices on your home network and ru
 ```
 git clone https://github.com/jaketarnow/Snoopy
 ```
-* Open the .xcodeproj file
+* Create a new xcode project and pull in all the files from [SnoopyFinal](https://github.com/jaketarnow/Snoopy/tree/master/Snoopy_Final)
 * Edit the Build Settings to your desired Apple Developer Account and edit specs for specific devices you want to run on
 * Run simulator or build onto your iOS device
 * Enjoy! All code explanations are below
